@@ -11,22 +11,22 @@ import com.stedi.gyrshot.layers.ShotLayer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainView extends View implements View.OnClickListener {
+public class LayersView extends View implements View.OnClickListener {
     private final List<Layer> layers = new ArrayList<>();
     private final ShotLayer shotLayer = new ShotLayer();
 
     private float x;
     private float y;
 
-    public MainView(Context context) {
+    public LayersView(Context context) {
         this(context, null);
     }
 
-    public MainView(Context context, AttributeSet attrs) {
+    public LayersView(Context context, AttributeSet attrs) {
         this(context, attrs, -1);
     }
 
-    public MainView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LayersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setOnClickListener(this);
     }

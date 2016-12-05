@@ -1,6 +1,5 @@
 package com.stedi.gyrshot;
 
-import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -8,12 +7,15 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.layers.TestLayer;
 import com.stedi.gyrshot.layers.TestLayer2;
 
-public class MainActivity extends Activity implements SensorEventListener {
-    private MainView mainView;
+public class MainActivity extends CameraActivity implements SensorEventListener {
+    private LayersView layersView;
+    private ViewGroup cameraPreviewContainer;
 
     private SensorManager sensorManager;
     private Sensor gyroSensor;
@@ -21,10 +23,11 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mainView = new MainView(this);
-        mainView.addLayer(new TestLayer());
-        mainView.addLayer(new TestLayer2());
-        setContentView(mainView);
+        setContentView(R.layout.main_activity);
+        layersView = (LayersView) findViewById(R.id.layers_view);
+        cameraPreviewContainer = (ViewGroup) findViewById(R.id.camera_preview_container);
+        layersView.addLayer(new TestLayer());
+        layersView.addLayer(new TestLayer2());
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
     }
@@ -43,10 +46,15 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     @Override
+    protected ViewGroup onCreateCameraPreview() {
+        return cameraPreviewContainer;
+    }
+
+    @Override
     public void onSensorChanged(SensorEvent event) {
         float gyroX = (float) Math.toDegrees(event.values[0]);
         float gyroY = (float) -Math.toDegrees(event.values[1]);
-        mainView.update(gyroX, gyroY);
+        layersView.update(gyroX, gyroY);
     }
 
     @Override
