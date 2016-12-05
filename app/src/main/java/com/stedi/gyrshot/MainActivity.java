@@ -46,8 +46,13 @@ public class MainActivity extends CameraActivity implements SensorEventListener 
     }
 
     @Override
-    protected ViewGroup onCreateCameraPreview() {
+    protected ViewGroup getPreviewContainer() {
         return cameraPreviewContainer;
+    }
+
+    @Override
+    public void onCameraInit(boolean result) {
+
     }
 
     @Override
