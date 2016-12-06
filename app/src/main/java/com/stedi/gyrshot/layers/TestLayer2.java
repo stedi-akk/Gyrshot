@@ -10,14 +10,12 @@ public class TestLayer2 extends Layer {
 
     public TestLayer2() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(10f);
-        paint.setColor(Color.GREEN);
+        paint.setColor(Color.RED);
     }
 
     @Override
-    public void onDraw(Canvas canvas, float x, float y) {
-        canvas.drawRect(x, y, x + 200, y + 200, paint);
+    public void onDraw(Canvas canvas, float gyroX, float gyroY) {
+        canvas.drawCircle(gyroX + 400, gyroY + 800, 100, paint);
     }
 
     @Override

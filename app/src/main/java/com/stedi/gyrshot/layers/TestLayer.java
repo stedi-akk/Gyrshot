@@ -9,11 +9,11 @@ public class TestLayer extends Layer {
 
     public TestLayer() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.GREEN);
     }
 
     @Override
-    public void onDraw(Canvas canvas, float x, float y) {
-        canvas.drawRect(x, y, x + 50, y + 50, paint);
+    public void onDraw(Canvas canvas, float gyroX, float gyroY) {
+        canvas.drawCircle(gyroX + 200, gyroY + 200, 100, paint);
     }
 }

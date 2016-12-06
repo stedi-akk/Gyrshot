@@ -13,10 +13,12 @@ import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.TestLayer;
 import com.stedi.gyrshot.layers.TestLayer2;
+import com.stedi.gyrshot.overlay.OverlayView;
 
-public class MainActivity extends CameraActivity implements SensorEventListener {
-    private LayersView layersView;
+public class MainActivity extends CameraActivity implements SensorEventListener, OverlayView.Listener {
     private ViewGroup cameraPreviewContainer;
+    private LayersView layersView;
+    private OverlayView overlayView;
 
     private SensorManager sensorManager;
     private Sensor gyroSensor;
@@ -25,18 +27,18 @@ public class MainActivity extends CameraActivity implements SensorEventListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-        layersView = (LayersView) findViewById(R.id.layers_view);
-        cameraPreviewContainer = (ViewGroup) findViewById(R.id.camera_preview_container);
-        layersView.addLayer(new TestLayer());
-        layersView.addLayer(new TestLayer2());
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        cameraPreviewContainer = (ViewGroup) findViewById(R.id.main_activity_camera_preview_container);
+        layersView = (LayersView) findViewById(R.id.main_activity_layers_view);
+        overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
+        initLayers();
+        initOverlay();
+        initGyroscope();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        hideNavbar();
+        hideNavigationBar();
         sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
@@ -52,27 +54,59 @@ public class MainActivity extends CameraActivity implements SensorEventListener 
     }
 
     @Override
-    public void onCameraInit(boolean result) {
+    public void onCameraOpen(boolean result) {
+    }
 
+    @Override
+    public void onCameraRelease() {
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         float gyroX = (float) Math.toDegrees(event.values[0]);
         float gyroY = (float) -Math.toDegrees(event.values[1]);
-        layersView.update(gyroX, gyroY);
+        layersView.updateFromGyroscope(gyroX, gyroY);
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public void onShot(OverlayView.Mode mode, float x, float y) {
+        layersView.shot(x, y);
+    }
+
+    @Override
+    public void onCameraClick() {
 
     }
 
-    private void hideNavbar() {
+    @Override
+    public void onSoundsClick() {
+
+    }
+
+    private void initLayers() {
+        layersView.addLayer(new TestLayer());
+        layersView.addLayer(new TestLayer2());
+    }
+
+    private void initOverlay() {
+        overlayView.setMode(OverlayView.Mode.MENU);
+        overlayView.setListener(this);
+    }
+
+    private void initGyroscope() {
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+    }
+
+    private void hideNavigationBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 }

@@ -20,16 +20,20 @@ public abstract class CameraActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        onCameraInit(initCamera(getPreviewContainer()));
+        onCameraOpen(initCamera(getPreviewContainer()));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         releaseCamera();
+        onCameraRelease();
     }
 
-    public void onCameraInit(boolean result) {
+    public void onCameraOpen(boolean result) {
+    }
+
+    public void onCameraRelease() {
     }
 
     protected abstract ViewGroup getPreviewContainer();

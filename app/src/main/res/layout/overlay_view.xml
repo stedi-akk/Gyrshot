@@ -7,4 +7,24 @@
         android:layout_width="10dp"
         android:layout_height="10dp" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_gravity="right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/overlay_view_btn_camera"
+            android:background="@android:drawable/ic_dialog_alert"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+        <View
+            android:id="@+id/overlay_view_btn_sounds"
+            android:background="@android:drawable/ic_dialog_alert"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
 </merge>
