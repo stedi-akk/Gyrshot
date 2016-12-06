@@ -6,6 +6,8 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
+import com.stedi.gyrshot.Config;
+
 public abstract class CameraActivity extends Activity {
     private boolean hasCamera;
     private int cameraId = -1;
@@ -39,6 +41,8 @@ public abstract class CameraActivity extends Activity {
     protected abstract ViewGroup getPreviewContainer();
 
     private boolean initCamera(ViewGroup previewContainer) {
+        if (!Config.ALLOW_CAMERA)
+            return false;
         Camera c = getCameraInstance();
         if (c != null) {
             CameraPreview cameraPreview = new CameraPreview(this, c);

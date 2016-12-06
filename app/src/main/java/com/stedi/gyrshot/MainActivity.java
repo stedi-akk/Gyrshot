@@ -23,6 +23,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     private SensorManager sensorManager;
     private Sensor gyroSensor;
 
+    private float lastGyroX, lastGyroY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +67,12 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     public void onSensorChanged(SensorEvent event) {
         float gyroX = (float) Math.toDegrees(event.values[0]);
         float gyroY = (float) -Math.toDegrees(event.values[1]);
-        layersView.updateFromGyroscope(gyroX, gyroY);
+        if (Math.abs(gyroX - lastGyroX) > Config.GYROSCOPE_ACCURACY
+                || Math.abs(gyroY - lastGyroY) > Config.GYROSCOPE_ACCURACY) {
+            lastGyroX = gyroX;
+            lastGyroY = gyroY;
+            layersView.updateFromGyroscope(lastGyroX, lastGyroY);
+        }
     }
 
     @Override
