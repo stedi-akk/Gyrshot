@@ -8,8 +8,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.stedi.gyrshot.LayersView
+    <com.stedi.gyrshot.layers.LayersView
         android:id="@+id/layers_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.stedi.gyrshot.overlay.OverlayView
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

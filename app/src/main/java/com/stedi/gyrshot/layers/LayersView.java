@@ -1,19 +1,15 @@
-package com.stedi.gyrshot;
+package com.stedi.gyrshot.layers;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.stedi.gyrshot.layers.Layer;
-import com.stedi.gyrshot.layers.ShotLayer;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class LayersView extends View implements View.OnClickListener {
     private final List<Layer> layers = new ArrayList<>();
-    private final ShotLayer shotLayer = new ShotLayer();
 
     private float x;
     private float y;
@@ -45,15 +41,17 @@ public class LayersView extends View implements View.OnClickListener {
     protected void onDraw(Canvas canvas) {
         for (Layer layer : layers)
             layer.onDraw(canvas, x, y);
-        shotLayer.onDraw(canvas, getWidth() / 2, getHeight() / 2);
     }
 
     @Override
     public void onClick(View v) {
         boolean invalidate = false;
-        for (Layer layer : layers)
+        for (Layer layer : layers) {
             invalidate = layer.onShot(getWidth() / 2, getHeight() / 2);
-        if (invalidate)
-            invalidate();
+            if (invalidate) {
+                invalidate();
+                break;
+            }
+        }
     }
 }

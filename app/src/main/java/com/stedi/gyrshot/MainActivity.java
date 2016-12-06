@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.stedi.gyrshot.camera.CameraActivity;
+import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.TestLayer;
 import com.stedi.gyrshot.layers.TestLayer2;
 
