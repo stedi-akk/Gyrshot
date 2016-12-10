@@ -10,8 +10,9 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.Config;
-import com.stedi.gyrshot.Tools;
+import com.stedi.gyrshot.Mode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +21,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private final List<Layer> layers = new ArrayList<>();
 
     private RefreshThread thread;
+    private Mode mode;
 
-    private float gyroXOffset;
-    private float gyroYOffset;
+    private float gyroXOffset, gyroYOffset;
+    private float centerX, centerY;
 
     private Paint debugTextPaint;
 
@@ -41,18 +43,39 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         setZOrderMediaOverlay(true);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        centerX = getMeasuredWidth() / 2;
+        centerY = getMeasuredHeight() / 2;
+    }
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
     public void addLayer(Layer layer) {
         layers.add(layer);
     }
 
     public void updateFromGyroscope(float gyroX, float gyroY) {
-        this.gyroXOffset += gyroX;
-        this.gyroYOffset += gyroY;
+        gyroXOffset += gyroX;
+        gyroYOffset += gyroY;
+
+        if (gyroXOffset < mode.rect.left)
+            gyroXOffset = mode.rect.left;
+        else if (gyroXOffset > mode.rect.right)
+            gyroXOffset = mode.rect.right;
+
+        if (gyroYOffset < mode.rect.top)
+            gyroYOffset = mode.rect.top;
+        else if (gyroYOffset > mode.rect.bottom)
+            gyroYOffset = mode.rect.bottom;
     }
 
-    public void shot(float x, float y) {
+    public void shot() {
         for (Layer layer : layers) {
-            if (layer.onShot(x, y))
+            if (layer.onShot(centerX, centerY))
                 return;
         }
     }
@@ -75,7 +98,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void drawLayers(Canvas canvas) {
         for (Layer layer : layers)
-            layer.onDraw(canvas, gyroXOffset, gyroYOffset);
+            layer.onDraw(canvas, gyroXOffset, gyroYOffset, mode);
     }
 
     private void drawDebugInfo(Canvas canvas, String info) {
@@ -89,7 +112,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint getDebugTextPaint() {
         if (debugTextPaint == null) {
             debugTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            debugTextPaint.setTextSize(Tools.dp2px(getContext(), 15));
+            debugTextPaint.setTextSize(App.dp2px(15));
             debugTextPaint.setColor(Color.WHITE);
         }
         return debugTextPaint;
@@ -129,7 +152,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
                     synchronized (surfaceHolder) {
                         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                        canvas.save();
+                        canvas.translate(centerX, centerY);
                         drawLayers(canvas);
+                        canvas.restore();
                         if (Config.SHOW_FPS)
                             drawDebugInfo(canvas, String.valueOf(fps));
                     }

@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 
+import com.stedi.gyrshot.Mode;
+
 public class TestLayer2 extends Layer {
     private Paint paint;
 
@@ -14,8 +16,8 @@ public class TestLayer2 extends Layer {
     }
 
     @Override
-    public void onDraw(Canvas canvas, float xOffset, float yOffset) {
-        canvas.drawCircle(xOffset + 400, yOffset + 800, 100, paint);
+    public void onDraw(Canvas canvas, float xOffset, float yOffset, Mode mode) {
+        canvas.drawCircle(xOffset, yOffset, 50, paint);
     }
 
     @Override

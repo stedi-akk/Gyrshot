@@ -6,21 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.stedi.gyrshot.Mode;
 import com.stedi.gyrshot.R;
 
 public class OverlayView extends FrameLayout implements View.OnClickListener {
     private Mode mode;
     private Listener listener;
 
-    private float shotX, shotY;
-
-    public enum Mode {
-        MENU,
-        GAME
-    }
-
     public interface Listener {
-        void onShot(Mode mode, float x, float y);
+        void onShot();
 
         void onCameraClick();
 
@@ -52,17 +46,10 @@ public class OverlayView extends FrameLayout implements View.OnClickListener {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        shotX = getMeasuredWidth() / 2;
-        shotY = getMeasuredHeight() / 2;
-    }
-
-    @Override
     public void onClick(View v) {
         if (listener == null)
             return;
-        listener.onShot(mode, shotX, shotY);
+        listener.onShot();
     }
 
     private OnClickListener settingsClickListener = new OnClickListener() {

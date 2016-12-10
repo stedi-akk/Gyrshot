@@ -76,8 +76,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     }
 
     @Override
-    public void onShot(OverlayView.Mode mode, float x, float y) {
-        layersView.shot(x, y);
+    public void onShot() {
+        layersView.shot();
     }
 
     @Override
@@ -91,12 +91,13 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     }
 
     private void initLayers() {
+        layersView.setMode(Mode.MENU);
         layersView.addLayer(new TestLayer());
         layersView.addLayer(new TestLayer2());
     }
 
     private void initOverlay() {
-        overlayView.setMode(OverlayView.Mode.MENU);
+        overlayView.setMode(Mode.MENU);
         overlayView.setListener(this);
     }
 
