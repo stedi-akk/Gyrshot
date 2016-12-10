@@ -14,8 +14,8 @@ public class TestLayer2 extends Layer {
     }
 
     @Override
-    public void onDraw(Canvas canvas, float gyroX, float gyroY) {
-        canvas.drawCircle(gyroX + 400, gyroY + 800, 100, paint);
+    public void onDraw(Canvas canvas, float xOffset, float yOffset) {
+        canvas.drawCircle(xOffset + 400, yOffset + 800, 100, paint);
     }
 
     @Override
