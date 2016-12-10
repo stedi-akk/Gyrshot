@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -34,6 +36,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     public LayersView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         getHolder().addCallback(this);
+        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        setZOrderMediaOverlay(true);
     }
 
     public void addLayer(Layer layer) {
@@ -113,7 +117,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas = surfaceHolder.lockCanvas();
 
                     synchronized (surfaceHolder) {
-                        canvas.drawColor(Color.WHITE);
+                        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         drawLayers(canvas);
                         if (Config.SHOW_FPS)
                             drawFps(canvas, fps);
