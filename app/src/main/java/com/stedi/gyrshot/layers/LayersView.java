@@ -13,6 +13,7 @@ import android.view.SurfaceView;
 import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.Config;
 import com.stedi.gyrshot.Mode;
+import com.stedi.gyrshot.targets.TargetsFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setMode(Mode mode) {
         this.mode = mode;
+        TargetsFactory.setMode(mode);
     }
 
     public void addLayer(Layer layer) {

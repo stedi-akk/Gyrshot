@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.layers.LayersView;
-import com.stedi.gyrshot.layers.TestLayer;
-import com.stedi.gyrshot.layers.TestLayer2;
+import com.stedi.gyrshot.layers.ZoneLayer;
+import com.stedi.gyrshot.layers.TargetsLayer;
 import com.stedi.gyrshot.overlay.OverlayView;
 
 public class MainActivity extends CameraActivity implements SensorEventListener, OverlayView.Listener {
@@ -93,8 +93,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     private void initLayers() {
         layersView.setMode(Mode.MENU);
-        layersView.addLayer(new TestLayer());
-        layersView.addLayer(new TestLayer2());
+        layersView.addLayer(new ZoneLayer());
+        layersView.addLayer(new TargetsLayer());
     }
 
     private void initOverlay() {

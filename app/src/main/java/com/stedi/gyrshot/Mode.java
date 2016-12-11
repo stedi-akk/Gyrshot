@@ -3,7 +3,7 @@ package com.stedi.gyrshot;
 import android.graphics.Rect;
 
 public enum Mode {
-    MENU(200, 200),
+    MENU(500, 500),
     GAME(1000, 1000);
 
     public final int zoneWidthPx;
