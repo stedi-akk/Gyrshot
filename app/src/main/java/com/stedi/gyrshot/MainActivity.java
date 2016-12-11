@@ -57,6 +57,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     @Override
     public void onCameraOpen(boolean result) {
+        layersView.setTransparent(result);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     @Override
     public void onShot() {
-        layersView.shot();
+        layersView.onShot();
     }
 
     @Override

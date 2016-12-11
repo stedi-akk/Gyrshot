@@ -27,6 +27,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private float centerX, centerY;
 
     private Paint debugTextPaint;
+    private boolean isTransparent;
 
     public LayersView(Context context) {
         this(context, null);
@@ -58,6 +59,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         layers.add(layer);
     }
 
+    public void setTransparent(boolean value) {
+        isTransparent = value;
+    }
+
     public void updateFromGyroscope(float gyroX, float gyroY) {
         gyroXOffset += gyroX;
         gyroYOffset += gyroY;
@@ -73,7 +78,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             gyroYOffset = mode.rect.bottom;
     }
 
-    public void shot() {
+    public void onShot() {
         for (Layer layer : layers) {
             if (layer.onShot(centerX, centerY))
                 return;
@@ -151,7 +156,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas = surfaceHolder.lockCanvas();
 
                     synchronized (surfaceHolder) {
-                        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                        if (isTransparent)
+                            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                        else
+                            canvas.drawColor(Config.LAYERS_VIEW_BACKGROUND_COLOR);
                         canvas.save();
                         canvas.translate(centerX, centerY);
                         drawLayers(canvas);
