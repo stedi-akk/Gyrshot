@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -69,15 +70,17 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         gyroXOffset += gyroX;
         gyroYOffset += gyroY;
 
-        if (gyroXOffset < mode.rect.left)
-            gyroXOffset = mode.rect.left;
-        else if (gyroXOffset > mode.rect.right)
-            gyroXOffset = mode.rect.right;
+        Rect rect = mode.getZoneRect();
 
-        if (gyroYOffset < mode.rect.top)
-            gyroYOffset = mode.rect.top;
-        else if (gyroYOffset > mode.rect.bottom)
-            gyroYOffset = mode.rect.bottom;
+        if (gyroXOffset < rect.left)
+            gyroXOffset = rect.left;
+        else if (gyroXOffset > rect.right)
+            gyroXOffset = rect.right;
+
+        if (gyroYOffset < rect.top)
+            gyroYOffset = rect.top;
+        else if (gyroYOffset > rect.bottom)
+            gyroYOffset = rect.bottom;
     }
 
     public void onShot() {

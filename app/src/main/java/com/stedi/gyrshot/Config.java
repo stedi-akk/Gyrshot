@@ -8,4 +8,5 @@ public final class Config {
     public static final boolean SHOW_FPS = true;
     public static final int LAYERS_VIEW_FPS = 30;
     public static final int LAYERS_VIEW_BACKGROUND_COLOR = Color.WHITE;
+    public static final boolean MODE_ZONE_SIZE_BY_SCREEN = true;
 }

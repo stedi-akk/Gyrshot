@@ -6,13 +6,34 @@ public enum Mode {
     MENU(500, 500),
     GAME(1000, 1000);
 
-    public final int zoneWidthPx;
-    public final int zoneHeightPx;
-    public final Rect rect;
+    private int zoneWidthPx;
+    private int zoneHeightPx;
+
+    private Rect zoneRect;
 
     Mode(int zoneWidthDp, int zoneHeightDp) {
-        this.zoneWidthPx = (int) App.dp2px(zoneWidthDp);
-        this.zoneHeightPx = (int) App.dp2px(zoneHeightDp);
-        this.rect = new Rect(-zoneWidthPx / 2, -zoneHeightPx / 2, zoneWidthPx / 2, zoneHeightPx / 2);
+        setZoneSize((int) App.dp2px(zoneWidthDp), (int) App.dp2px(zoneHeightDp));
+    }
+
+    public static void overrideZoneSize(Mode mode, int zoneWidthPx, int zoneHeightPx) {
+        mode.setZoneSize(zoneWidthPx, zoneHeightPx);
+    }
+
+    private void setZoneSize(int zoneWidthPx, int zoneHeightPx) {
+        this.zoneWidthPx = zoneWidthPx;
+        this.zoneHeightPx = zoneHeightPx;
+        this.zoneRect = new Rect(-zoneWidthPx / 2, -zoneHeightPx / 2, zoneWidthPx / 2, zoneHeightPx / 2);
+    }
+
+    public int getZoneWidth() {
+        return zoneWidthPx;
+    }
+
+    public int getZoneHeight() {
+        return zoneHeightPx;
+    }
+
+    public Rect getZoneRect() {
+        return zoneRect;
     }
 }
