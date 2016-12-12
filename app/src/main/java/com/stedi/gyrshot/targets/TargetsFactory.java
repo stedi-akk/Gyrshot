@@ -3,10 +3,9 @@ package com.stedi.gyrshot.targets;
 import android.graphics.Rect;
 
 import com.stedi.gyrshot.App;
-import com.stedi.gyrshot.Mode;
 
 public class TargetsFactory {
-    private static Mode sMode;
+    private static Rect creationRect;
 
     public enum Type {
         DECREASES,
@@ -15,16 +14,15 @@ public class TargetsFactory {
         MOVABLE_DECREASES
     }
 
-    public static void setMode(Mode mode) {
-        sMode = mode;
+    public static void setCreationRect(Rect rect) {
+        creationRect = rect;
     }
 
     public static Target create(Type type) {
         if (type == Type.DECREASES) {
             int radius = (int) DecreasesTarget.INITIAL_RADIUS;
-            Rect rect = sMode.getZoneRect();
-            int x = App.rand(rect.left + radius, rect.right - radius);
-            int y = App.rand(rect.top + radius, rect.bottom - radius);
+            int x = App.rand(creationRect.left + radius, creationRect.right - radius);
+            int y = App.rand(creationRect.top + radius, creationRect.bottom - radius);
             return new DecreasesTarget(x, y);
         }
         return null;

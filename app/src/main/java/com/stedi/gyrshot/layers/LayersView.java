@@ -52,13 +52,12 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         centerX = getMeasuredWidth() / 2;
         centerY = getMeasuredHeight() / 2;
-        refreshOffsetRect();
+        updateOffsetRect();
     }
 
     public void setMode(Mode mode) {
         this.mode = mode;
-        TargetsFactory.setMode(mode);
-        refreshOffsetRect();
+        updateOffsetRect();
     }
 
     public void addLayer(Layer layer) {
@@ -107,7 +106,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         thread = null;
     }
 
-    private void refreshOffsetRect() {
+    private void updateOffsetRect() {
         if (Config.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
             Rect rect = mode.getZoneRect();
             int leftEdge = (int) (rect.left + centerX);
@@ -118,6 +117,11 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         } else {
             offsetRect = mode.getZoneRect();
         }
+        onOffsetRectUpdated();
+    }
+
+    private void onOffsetRectUpdated() {
+        TargetsFactory.setCreationRect(offsetRect);
     }
 
     private void drawLayers(Canvas canvas) {
