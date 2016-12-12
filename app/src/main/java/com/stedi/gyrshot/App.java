@@ -22,9 +22,12 @@ public class App extends Application {
     }
 
     private void initModeZoneSizeByScreen() {
-        int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int menuZoneSize = (int) (screenWidth * 1.5);
-        int gameZoneSize = screenWidth * 2;
+        int zoneSizeByScreen = Math.max(getResources().getDisplayMetrics().heightPixels,
+                getResources().getDisplayMetrics().widthPixels);
+
+        int menuZoneSize = (int) (zoneSizeByScreen * 1.5);
+        int gameZoneSize = zoneSizeByScreen * 2;
+
         Mode.overrideZoneSize(Mode.MENU, menuZoneSize, menuZoneSize);
         Mode.overrideZoneSize(Mode.GAME, gameZoneSize, gameZoneSize);
     }

@@ -25,6 +25,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private RefreshThread thread;
     private Mode mode;
 
+    private Rect offsetRect;
     private float gyroXOffset, gyroYOffset;
     private float centerX, centerY;
 
@@ -51,11 +52,13 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         centerX = getMeasuredWidth() / 2;
         centerY = getMeasuredHeight() / 2;
+        refreshOffsetRect();
     }
 
     public void setMode(Mode mode) {
         this.mode = mode;
         TargetsFactory.setMode(mode);
+        refreshOffsetRect();
     }
 
     public void addLayer(Layer layer) {
@@ -70,17 +73,15 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         gyroXOffset += gyroX;
         gyroYOffset += gyroY;
 
-        Rect rect = mode.getZoneRect();
+        if (gyroXOffset < offsetRect.left)
+            gyroXOffset = offsetRect.left;
+        else if (gyroXOffset > offsetRect.right)
+            gyroXOffset = offsetRect.right;
 
-        if (gyroXOffset < rect.left)
-            gyroXOffset = rect.left;
-        else if (gyroXOffset > rect.right)
-            gyroXOffset = rect.right;
-
-        if (gyroYOffset < rect.top)
-            gyroYOffset = rect.top;
-        else if (gyroYOffset > rect.bottom)
-            gyroYOffset = rect.bottom;
+        if (gyroYOffset < offsetRect.top)
+            gyroYOffset = offsetRect.top;
+        else if (gyroYOffset > offsetRect.bottom)
+            gyroYOffset = offsetRect.bottom;
     }
 
     public void onShot() {
@@ -104,6 +105,19 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceDestroyed(SurfaceHolder holder) {
         thread.stopThread();
         thread = null;
+    }
+
+    private void refreshOffsetRect() {
+        if (Config.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
+            Rect rect = mode.getZoneRect();
+            int leftEdge = (int) (rect.left + centerX);
+            int rightEdge = (int) (rect.right - centerX);
+            int topEdge = (int) (rect.top + centerY);
+            int bottomEdge = (int) (rect.bottom - centerY);
+            offsetRect = new Rect(leftEdge, topEdge, rightEdge, bottomEdge);
+        } else {
+            offsetRect = mode.getZoneRect();
+        }
     }
 
     private void drawLayers(Canvas canvas) {
