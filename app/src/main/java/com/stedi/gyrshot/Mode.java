@@ -3,8 +3,8 @@ package com.stedi.gyrshot;
 import android.graphics.Rect;
 
 public enum Mode {
-    MENU(500, 500),
-    GAME(1000, 1000);
+    MENU(Config.STATIC_MENU_SIZE[0], Config.STATIC_MENU_SIZE[1]),
+    GAME(Config.STATIC_GAME_SIZE[0], Config.STATIC_GAME_SIZE[1]);
 
     private int zoneWidthPx;
     private int zoneHeightPx;

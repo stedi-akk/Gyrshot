@@ -1,6 +1,7 @@
 package com.stedi.gyrshot;
 
 import android.app.Application;
+import android.util.Log;
 import android.util.TypedValue;
 
 import java.util.Random;
@@ -25,11 +26,13 @@ public class App extends Application {
         int zoneSizeByScreen = Math.max(getResources().getDisplayMetrics().heightPixels,
                 getResources().getDisplayMetrics().widthPixels);
 
-        int menuZoneSize = (int) (zoneSizeByScreen * 1.5);
-        int gameZoneSize = zoneSizeByScreen * 2;
+        Mode.overrideZoneSize(Mode.MENU,
+                (int) (zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0]),
+                (int) (zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]));
 
-        Mode.overrideZoneSize(Mode.MENU, menuZoneSize, menuZoneSize);
-        Mode.overrideZoneSize(Mode.GAME, gameZoneSize, gameZoneSize);
+        Mode.overrideZoneSize(Mode.GAME,
+                (int) (zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0]),
+                (int) (zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]));
     }
 
     public static float dp2px(int dp) {
@@ -37,6 +40,12 @@ public class App extends Application {
     }
 
     public static int rand(int from, int to) {
-        return instance.random.nextInt((to - from) + 1) + from;
+        int n = (to - from) + 1;
+        return n < 0 ? 0 : instance.random.nextInt(n) + from;
+    }
+
+    public static void log(Object classObj, String message) {
+        if (BuildConfig.DEBUG)
+            Log.d("Gyrshot", classObj.getClass().getSimpleName() + ": " + message);
     }
 }

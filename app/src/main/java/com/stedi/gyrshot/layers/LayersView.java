@@ -48,10 +48,9 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        centerX = getMeasuredWidth() / 2;
-        centerY = getMeasuredHeight() / 2;
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        centerX = w / 2;
+        centerY = h / 2;
         updateOffsetRect();
     }
 
