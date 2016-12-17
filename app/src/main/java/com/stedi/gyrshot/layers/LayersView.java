@@ -3,7 +3,6 @@ package com.stedi.gyrshot.layers;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
@@ -11,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.Config;
 import com.stedi.gyrshot.Mode;
 import com.stedi.gyrshot.layers.targets.TargetsFactory;
@@ -21,6 +19,7 @@ import java.util.List;
 
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private final List<Layer> layers = new ArrayList<>();
+    private DebugLayer debugLayer;
 
     private RefreshThread thread;
     private Mode mode;
@@ -29,7 +28,6 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private float gyroXOffset, gyroYOffset;
     private float centerX, centerY;
 
-    private Paint debugTextPaint;
     private boolean isTransparent;
 
     public LayersView(Context context) {
@@ -128,21 +126,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             layer.onDraw(canvas, gyroXOffset, gyroYOffset, mode);
     }
 
-    private void drawDebugInfo(Canvas canvas, String info) {
-        Paint paint = getDebugTextPaint();
-        paint.setColor(Color.BLACK);
-        canvas.drawText(info, paint.getTextSize() + 1, paint.getTextSize() * 2 + 1, paint);
-        paint.setColor(Color.LTGRAY);
-        canvas.drawText(info, paint.getTextSize(), paint.getTextSize() * 2, paint);
-    }
-
-    private Paint getDebugTextPaint() {
-        if (debugTextPaint == null) {
-            debugTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            debugTextPaint.setTextSize(App.dp2px(15));
-            debugTextPaint.setColor(Color.WHITE);
-        }
-        return debugTextPaint;
+    private void drawDebugLayer(Canvas canvas, String debugText) {
+        debugLayer.showOffsetRect(offsetRect, centerX, centerY);
+        debugLayer.showDebugText(debugText);
+        debugLayer.onDraw(canvas, gyroXOffset, gyroYOffset, mode);
     }
 
     private class RefreshThread extends Thread {
@@ -166,7 +153,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                 try {
                     sleep(1000 / Config.LAYERS_VIEW_FPS);
 
-                    if (Config.SHOW_FPS) {
+                    if (Config.SHOW_DEBUG_LAYER) {
+                        if (debugLayer == null)
+                            debugLayer = new DebugLayer();
+
                         framesCount++;
                         if (System.currentTimeMillis() - refreshTime >= 1000) {
                             refreshTime = System.currentTimeMillis();
@@ -182,12 +172,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         else
                             canvas.drawColor(Config.LAYERS_VIEW_BACKGROUND_COLOR);
+
                         canvas.save();
                         canvas.translate(centerX, centerY);
                         drawLayers(canvas);
                         canvas.restore();
-                        if (Config.SHOW_FPS)
-                            drawDebugInfo(canvas, String.valueOf(fps));
+
+                        if (Config.SHOW_DEBUG_LAYER)
+                            drawDebugLayer(canvas, String.valueOf(fps));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
