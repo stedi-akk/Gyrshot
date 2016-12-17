@@ -4,8 +4,8 @@ import android.graphics.Canvas;
 import android.util.Log;
 
 import com.stedi.gyrshot.Mode;
-import com.stedi.gyrshot.targets.Target;
-import com.stedi.gyrshot.targets.TargetsFactory;
+import com.stedi.gyrshot.layers.targets.Target;
+import com.stedi.gyrshot.layers.targets.TargetsFactory;
 
 public class TargetsLayer extends Layer {
     private Target target;

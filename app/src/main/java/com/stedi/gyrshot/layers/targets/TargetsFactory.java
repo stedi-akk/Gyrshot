@@ -1,4 +1,4 @@
-package com.stedi.gyrshot.targets;
+package com.stedi.gyrshot.layers.targets;
 
 import android.graphics.Rect;
 
