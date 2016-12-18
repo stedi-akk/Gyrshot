@@ -10,8 +10,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.stedi.gyrshot.Config;
-import com.stedi.gyrshot.Mode;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.Mode;
 
 import java.util.ArrayList;
 import java.util.List;

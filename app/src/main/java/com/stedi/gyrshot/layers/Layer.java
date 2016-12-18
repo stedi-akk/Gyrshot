@@ -7,7 +7,7 @@ import com.stedi.gyrshot.other.FloatRect;
 public abstract class Layer {
     public abstract boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect);
 
-    public boolean onShot(float x, float y) {
+    public boolean onShot(float shotX, float shotY) {
         return false;
     }
 }

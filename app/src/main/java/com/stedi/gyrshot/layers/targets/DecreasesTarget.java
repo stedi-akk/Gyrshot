@@ -14,6 +14,7 @@ public class DecreasesTarget extends Target {
     private static final float RADIUS_STEP = INITIAL_RADIUS / DECREASE_TIME;
     private static final Paint PAINT;
 
+    private float radius;
     private long firstDrawTime;
 
     static {
@@ -26,23 +27,24 @@ public class DecreasesTarget extends Target {
     }
 
     @Override
+    public float getRadius() {
+        return radius;
+    }
+
+    @Override
     public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (firstDrawTime != 0) {
             long timeDiff = System.currentTimeMillis() - firstDrawTime;
             if (timeDiff >= DECREASE_TIME)
                 return false;
-            float radius = INITIAL_RADIUS - (RADIUS_STEP * timeDiff);
+            radius = INITIAL_RADIUS - (RADIUS_STEP * timeDiff);
             canvas.drawCircle(x, y, radius, PAINT);
             return true;
         } else {
-            canvas.drawCircle(x, y, INITIAL_RADIUS, PAINT);
+            radius = INITIAL_RADIUS;
+            canvas.drawCircle(x, y, radius, PAINT);
             firstDrawTime = System.currentTimeMillis();
             return true;
         }
-    }
-
-    @Override
-    public boolean onShot(float x, float y) {
-        return super.onShot(x, y);
     }
 }

@@ -1,6 +1,7 @@
-package com.stedi.gyrshot;
+package com.stedi.gyrshot.other;
 
-import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.Config;
 
 public enum Mode {
     MENU(Config.STATIC_MENU_SIZE[0], Config.STATIC_MENU_SIZE[1]),

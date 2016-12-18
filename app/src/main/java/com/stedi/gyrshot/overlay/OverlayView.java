@@ -6,8 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.stedi.gyrshot.Mode;
 import com.stedi.gyrshot.R;
+import com.stedi.gyrshot.other.Mode;
 
 public class OverlayView extends FrameLayout implements View.OnClickListener {
     private Mode mode;

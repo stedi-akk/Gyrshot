@@ -4,6 +4,8 @@ import android.app.Application;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.stedi.gyrshot.other.Mode;
+
 import java.util.Random;
 
 public class App extends Application {
