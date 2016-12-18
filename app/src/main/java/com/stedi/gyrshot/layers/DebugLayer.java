@@ -9,11 +9,11 @@ import com.stedi.gyrshot.App;
 
 public class DebugLayer extends Layer {
     private Paint debugTextPaint;
-    private Paint offsetRectPaint;
+    private Paint actualRectPaint;
     private Paint lastShotPaint;
 
     private String debugText;
-    private boolean showOffsetRect;
+    private boolean showActualRect;
     private boolean showZoneRect;
     private Float lastShotX, lastShotY;
 
@@ -27,13 +27,13 @@ public class DebugLayer extends Layer {
     }
 
     private Paint getRectPaint() {
-        if (offsetRectPaint == null) {
-            offsetRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            offsetRectPaint.setStyle(Paint.Style.STROKE);
-            offsetRectPaint.setStrokeWidth(1f);
-            offsetRectPaint.setColor(Color.RED);
+        if (actualRectPaint == null) {
+            actualRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            actualRectPaint.setStyle(Paint.Style.STROKE);
+            actualRectPaint.setStrokeWidth(1f);
+            actualRectPaint.setColor(Color.RED);
         }
-        return offsetRectPaint;
+        return actualRectPaint;
     }
 
     private Paint getLastShotPaint() {
@@ -48,8 +48,8 @@ public class DebugLayer extends Layer {
         this.debugText = debugText;
     }
 
-    public void showOffsetRect(boolean showOffsetRect) {
-        this.showOffsetRect = showOffsetRect;
+    public void showActualRect(boolean showActualRect) {
+        this.showActualRect = showActualRect;
     }
 
     public void showZoneRect(boolean showZoneRect) {
@@ -62,7 +62,7 @@ public class DebugLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect offsetRect) {
+    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
         if (debugText != null) {
             Paint paint = getDebugTextPaint();
             paint.setColor(Color.BLACK);
@@ -71,9 +71,9 @@ public class DebugLayer extends Layer {
             canvas.drawText(debugText, paint.getTextSize(), paint.getTextSize() * 2, paint);
         }
 
-        if (showOffsetRect) {
+        if (showActualRect) {
             Paint paint = getRectPaint();
-            canvas.drawRect(offsetRect.left, offsetRect.top, offsetRect.right, offsetRect.bottom, paint);
+            canvas.drawRect(actualRect.left, actualRect.top, actualRect.right, actualRect.bottom, paint);
         }
 
         if (showZoneRect) {

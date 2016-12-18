@@ -22,7 +22,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private RefreshThread thread;
     private Mode mode;
-    private Rect offsetRect;
+    private Rect actualRect;
 
     private float screenHalfWidth, screenHalfHeight;
     private float gyroXOffset, gyroYOffset;
@@ -51,12 +51,12 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         screenHalfWidth = w / 2;
         screenHalfHeight = h / 2;
-        updateOffsetRect();
+        calculateActualRect();
     }
 
     public void setMode(Mode mode) {
         this.mode = mode;
-        updateOffsetRect();
+        calculateActualRect();
     }
 
     public void addLayer(Layer layer) {
@@ -73,15 +73,15 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         gyroXOffset += gyroX;
         gyroYOffset += gyroY;
 
-        if (gyroXOffset < offsetRect.left)
-            gyroXOffset = offsetRect.left;
-        else if (gyroXOffset > offsetRect.right)
-            gyroXOffset = offsetRect.right;
+        if (gyroXOffset < actualRect.left)
+            gyroXOffset = actualRect.left;
+        else if (gyroXOffset > actualRect.right)
+            gyroXOffset = actualRect.right;
 
-        if (gyroYOffset < offsetRect.top)
-            gyroYOffset = offsetRect.top;
-        else if (gyroYOffset > offsetRect.bottom)
-            gyroYOffset = offsetRect.bottom;
+        if (gyroYOffset < actualRect.top)
+            gyroYOffset = actualRect.top;
+        else if (gyroYOffset > actualRect.bottom)
+            gyroYOffset = actualRect.bottom;
     }
 
     public void onShot() {
@@ -109,30 +109,30 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         thread = null;
     }
 
-    private void updateOffsetRect() {
+    private void calculateActualRect() {
         if (Config.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
             Rect rect = mode.getZoneRect();
             int leftEdge = (int) (rect.left + screenHalfWidth);
             int rightEdge = (int) (rect.right - screenHalfWidth);
             int topEdge = (int) (rect.top + screenHalfHeight);
             int bottomEdge = (int) (rect.bottom - screenHalfHeight);
-            offsetRect = new Rect(leftEdge, topEdge, rightEdge, bottomEdge);
+            actualRect = new Rect(leftEdge, topEdge, rightEdge, bottomEdge);
         } else {
-            offsetRect = mode.getZoneRect();
+            actualRect = mode.getZoneRect();
         }
     }
 
     private void drawLayers(Canvas canvas) {
         for (Layer layer : layers)
-            layer.onDraw(canvas, mode.getZoneRect(), offsetRect);
+            layer.onDraw(canvas, mode.getZoneRect(), actualRect);
     }
 
     private void drawDebugLayer(Canvas canvas) {
         debugLayer.showZoneRect(true);
-        debugLayer.showOffsetRect(true);
+        debugLayer.showActualRect(true);
         debugLayer.showDebugText(String.valueOf(fps));
         debugLayer.showLastShot(shotX, shotY);
-        debugLayer.onDraw(canvas, mode.getZoneRect(), offsetRect);
+        debugLayer.onDraw(canvas, mode.getZoneRect(), actualRect);
     }
 
     private class RefreshThread extends Thread {

@@ -26,7 +26,7 @@ public class DecreasesTarget extends Target {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect offsetRect) {
+    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
         if (firstDrawTime != 0) {
             long timeDiff = System.currentTimeMillis() - firstDrawTime;
             if (timeDiff >= DECREASE_TIME)

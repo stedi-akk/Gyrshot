@@ -13,17 +13,17 @@ public class TargetsLayer extends Layer {
     private List<Target> targets;
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect offsetRect) {
+    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
         if (targets == null) {
             targets = new ArrayList<>();
             for (int i = 0; i < 50; i++)
-                targets.add(TargetsFactory.create(TargetsFactory.Type.DECREASES, offsetRect));
+                targets.add(TargetsFactory.create(TargetsFactory.Type.DECREASES, actualRect));
         }
 
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
-            if (!target.onDraw(canvas, zoneRect, offsetRect))
-                targets.set(i, TargetsFactory.create(TargetsFactory.Type.DECREASES, offsetRect));
+            if (!target.onDraw(canvas, zoneRect, actualRect))
+                targets.set(i, TargetsFactory.create(TargetsFactory.Type.DECREASES, actualRect));
         }
 
         return true;
