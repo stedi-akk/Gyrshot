@@ -1,10 +1,11 @@
 package com.stedi.gyrshot.layers;
 
 import android.graphics.Canvas;
-import android.graphics.Rect;
+
+import com.stedi.gyrshot.other.FloatRect;
 
 public abstract class Layer {
-    public abstract boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect);
+    public abstract boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect);
 
     public boolean onShot(float x, float y) {
         return false;

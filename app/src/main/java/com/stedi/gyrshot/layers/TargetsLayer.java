@@ -1,10 +1,10 @@
 package com.stedi.gyrshot.layers;
 
 import android.graphics.Canvas;
-import android.graphics.Rect;
 
 import com.stedi.gyrshot.layers.targets.Target;
 import com.stedi.gyrshot.layers.targets.TargetsFactory;
+import com.stedi.gyrshot.other.FloatRect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public class TargetsLayer extends Layer {
     private List<Target> targets;
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
+    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (targets == null) {
             targets = new ArrayList<>();
             for (int i = 0; i < 50; i++)

@@ -3,9 +3,9 @@ package com.stedi.gyrshot.layers;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.other.FloatRect;
 
 public class DebugLayer extends Layer {
     private Paint debugTextPaint;
@@ -62,7 +62,7 @@ public class DebugLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
+    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (debugText != null) {
             Paint paint = getDebugTextPaint();
             paint.setColor(Color.BLACK);

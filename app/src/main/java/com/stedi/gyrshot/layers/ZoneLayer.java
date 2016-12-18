@@ -3,9 +3,9 @@ package com.stedi.gyrshot.layers;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.other.FloatRect;
 
 public class ZoneLayer extends Layer {
     private Paint paint;
@@ -18,7 +18,7 @@ public class ZoneLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
+    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         canvas.drawRect(zoneRect.left, zoneRect.top, zoneRect.right, zoneRect.bottom, paint);
         return true;
     }

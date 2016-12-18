@@ -27,16 +27,20 @@ public class App extends Application {
                 getResources().getDisplayMetrics().widthPixels);
 
         Mode.overrideZoneSize(Mode.MENU,
-                (int) (zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0]),
-                (int) (zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]));
+                zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
+                zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
 
         Mode.overrideZoneSize(Mode.GAME,
-                (int) (zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0]),
-                (int) (zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]));
+                zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
+                zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
     }
 
     public static float dp2px(int dp) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, instance.getResources().getDisplayMetrics());
+    }
+
+    public static float rand(float from, float to) {
+        return rand((int) from, (int) to);
     }
 
     public static int rand(int from, int to) {

@@ -3,10 +3,10 @@ package com.stedi.gyrshot.layers.targets;
 import com.stedi.gyrshot.layers.Layer;
 
 public abstract class Target extends Layer {
-    protected int x;
-    protected int y;
+    protected float x;
+    protected float y;
 
-    public Target(int x, int y) {
+    public Target(float x, float y) {
         this.x = x;
         this.y = y;
     }

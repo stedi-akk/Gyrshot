@@ -5,13 +5,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.stedi.gyrshot.Config;
 import com.stedi.gyrshot.Mode;
+import com.stedi.gyrshot.other.FloatRect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private RefreshThread thread;
     private Mode mode;
-    private Rect actualRect;
+    private FloatRect actualRect;
 
     private float screenHalfWidth, screenHalfHeight;
     private float gyroXOffset, gyroYOffset;
@@ -111,12 +111,12 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void calculateActualRect() {
         if (Config.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
-            Rect rect = mode.getZoneRect();
-            int leftEdge = (int) (rect.left + screenHalfWidth);
-            int rightEdge = (int) (rect.right - screenHalfWidth);
-            int topEdge = (int) (rect.top + screenHalfHeight);
-            int bottomEdge = (int) (rect.bottom - screenHalfHeight);
-            actualRect = new Rect(leftEdge, topEdge, rightEdge, bottomEdge);
+            FloatRect rect = mode.getZoneRect();
+            float leftEdge = rect.left + screenHalfWidth;
+            float rightEdge = rect.right - screenHalfWidth;
+            float topEdge = rect.top + screenHalfHeight;
+            float bottomEdge = rect.bottom - screenHalfHeight;
+            actualRect = new FloatRect(leftEdge, topEdge, rightEdge, bottomEdge);
         } else {
             actualRect = mode.getZoneRect();
         }

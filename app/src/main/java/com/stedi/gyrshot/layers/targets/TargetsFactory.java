@@ -1,8 +1,7 @@
 package com.stedi.gyrshot.layers.targets;
 
-import android.graphics.Rect;
-
 import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.other.FloatRect;
 
 public class TargetsFactory {
     public enum Type {
@@ -12,11 +11,11 @@ public class TargetsFactory {
         MOVABLE_DECREASES
     }
 
-    public static Target create(Type type, Rect rect) {
+    public static Target create(Type type, FloatRect rect) {
         if (type == Type.DECREASES) {
-            int radius = (int) DecreasesTarget.INITIAL_RADIUS;
-            int x = App.rand(rect.left + radius, rect.right - radius);
-            int y = App.rand(rect.top + radius, rect.bottom - radius);
+            float radius = DecreasesTarget.INITIAL_RADIUS;
+            float x = App.rand(rect.left + radius, rect.right - radius);
+            float y = App.rand(rect.top + radius, rect.bottom - radius);
             return new DecreasesTarget(x, y);
         }
         return null;

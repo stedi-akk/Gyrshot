@@ -3,9 +3,9 @@ package com.stedi.gyrshot.layers.targets;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 
 import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.other.FloatRect;
 
 public class DecreasesTarget extends Target {
     public static final float INITIAL_RADIUS = (int) App.dp2px(50);
@@ -21,12 +21,12 @@ public class DecreasesTarget extends Target {
         PAINT.setColor(Color.RED);
     }
 
-    public DecreasesTarget(int x, int y) {
+    public DecreasesTarget(float x, float y) {
         super(x, y);
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect actualRect) {
+    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (firstDrawTime != 0) {
             long timeDiff = System.currentTimeMillis() - firstDrawTime;
             if (timeDiff >= DECREASE_TIME)
