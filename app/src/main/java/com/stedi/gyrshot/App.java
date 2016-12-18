@@ -18,7 +18,7 @@ public class App extends Application {
 
         random = new Random();
 
-        if (Config.MODE_ZONE_SIZE_BY_SCREEN)
+        if (Config.MODE_ZONE_SIZE_DEPENDS_ON_SCREEN)
             initModeZoneSizeByScreen();
     }
 

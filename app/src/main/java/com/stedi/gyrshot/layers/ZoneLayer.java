@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import com.stedi.gyrshot.App;
-import com.stedi.gyrshot.Mode;
 
 public class ZoneLayer extends Layer {
     private Paint paint;
@@ -19,10 +18,8 @@ public class ZoneLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, float xOffset, float yOffset, Mode mode) {
-        Rect rect = mode.getZoneRect();
-        canvas.drawRect(rect.left + xOffset, rect.top + yOffset,
-                rect.right + xOffset, rect.bottom + yOffset, paint);
+    public boolean onDraw(Canvas canvas, Rect zoneRect, Rect offsetRect) {
+        canvas.drawRect(zoneRect.left, zoneRect.top, zoneRect.right, zoneRect.bottom, paint);
         return true;
     }
 }

@@ -12,25 +12,25 @@ import android.view.SurfaceView;
 
 import com.stedi.gyrshot.Config;
 import com.stedi.gyrshot.Mode;
-import com.stedi.gyrshot.layers.targets.TargetsFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
-    private final List<Layer> layers = new ArrayList<>();
+    private List<Layer> layers;
     private DebugLayer debugLayer;
 
     private RefreshThread thread;
     private Mode mode;
-
     private Rect offsetRect;
 
+    private float screenHalfWidth, screenHalfHeight;
     private float gyroXOffset, gyroYOffset;
-    private float centerX, centerY;
     private float shotX, shotY;
 
     private boolean isTransparent;
+
+    private int fps;
 
     public LayersView(Context context) {
         this(context, null);
@@ -49,8 +49,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        centerX = w / 2;
-        centerY = h / 2;
+        screenHalfWidth = w / 2;
+        screenHalfHeight = h / 2;
         updateOffsetRect();
     }
 
@@ -60,6 +60,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void addLayer(Layer layer) {
+        if (layers == null)
+            layers = new ArrayList<>();
         layers.add(layer);
     }
 
@@ -110,31 +112,27 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private void updateOffsetRect() {
         if (Config.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
             Rect rect = mode.getZoneRect();
-            int leftEdge = (int) (rect.left + centerX);
-            int rightEdge = (int) (rect.right - centerX);
-            int topEdge = (int) (rect.top + centerY);
-            int bottomEdge = (int) (rect.bottom - centerY);
+            int leftEdge = (int) (rect.left + screenHalfWidth);
+            int rightEdge = (int) (rect.right - screenHalfWidth);
+            int topEdge = (int) (rect.top + screenHalfHeight);
+            int bottomEdge = (int) (rect.bottom - screenHalfHeight);
             offsetRect = new Rect(leftEdge, topEdge, rightEdge, bottomEdge);
         } else {
             offsetRect = mode.getZoneRect();
         }
-        onOffsetRectUpdated();
-    }
-
-    private void onOffsetRectUpdated() {
-        TargetsFactory.setCreationRect(offsetRect);
     }
 
     private void drawLayers(Canvas canvas) {
         for (Layer layer : layers)
-            layer.onDraw(canvas, gyroXOffset, gyroYOffset, mode);
+            layer.onDraw(canvas, mode.getZoneRect(), offsetRect);
     }
 
-    private void drawDebugLayer(Canvas canvas, String debugText) {
-        debugLayer.showOffsetRect(offsetRect);
-        debugLayer.showDebugText(debugText);
+    private void drawDebugLayer(Canvas canvas) {
+        debugLayer.showZoneRect(true);
+        debugLayer.showOffsetRect(true);
+        debugLayer.showDebugText(String.valueOf(fps));
         debugLayer.showLastShot(shotX, shotY);
-        debugLayer.onDraw(canvas, gyroXOffset, gyroYOffset, mode);
+        debugLayer.onDraw(canvas, mode.getZoneRect(), offsetRect);
     }
 
     private class RefreshThread extends Thread {
@@ -151,7 +149,6 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             long refreshTime = System.currentTimeMillis();
 
             int framesCount = 0;
-            int fps = 0;
 
             while (run) {
                 Canvas canvas = null;
@@ -173,7 +170,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas = surfaceHolder.lockCanvas();
 
                     synchronized (surfaceHolder) {
-                        canvas.translate(centerX, centerY);
+                        canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
 
                         if (isTransparent)
                             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -181,9 +178,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                             canvas.drawColor(Config.LAYERS_VIEW_BACKGROUND_COLOR);
 
                         drawLayers(canvas);
-
                         if (Config.SHOW_DEBUG_LAYER)
-                            drawDebugLayer(canvas, String.valueOf(fps));
+                            drawDebugLayer(canvas);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
