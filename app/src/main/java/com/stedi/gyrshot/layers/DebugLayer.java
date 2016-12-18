@@ -11,10 +11,12 @@ import com.stedi.gyrshot.Mode;
 public class DebugLayer extends Layer {
     private Paint debugTextPaint;
     private Paint offsetRectPaint;
+    private Paint lastShotPaint;
 
     private String debugText;
     private Rect offsetRect;
-    private float centerX, centerY;
+
+    private Float lastShotX, lastShotY;
 
     private Paint getDebugTextPaint() {
         if (debugTextPaint == null) {
@@ -35,14 +37,25 @@ public class DebugLayer extends Layer {
         return offsetRectPaint;
     }
 
+    private Paint getLastShotPaint() {
+        if (lastShotPaint == null) {
+            lastShotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            lastShotPaint.setColor(Color.YELLOW);
+        }
+        return lastShotPaint;
+    }
+
     public void showDebugText(String debugText) {
         this.debugText = debugText;
     }
 
-    public void showOffsetRect(Rect offsetRect, float centreX, float centerY) {
+    public void showOffsetRect(Rect offsetRect) {
         this.offsetRect = offsetRect;
-        this.centerX = centreX;
-        this.centerY = centerY;
+    }
+
+    public void showLastShot(float lastShotX, float lastShotY) {
+        this.lastShotX = lastShotX;
+        this.lastShotY = lastShotY;
     }
 
     @Override
@@ -57,11 +70,13 @@ public class DebugLayer extends Layer {
 
         if (offsetRect != null) {
             Paint paint = getOffsetRectPaint();
-            canvas.save();
-            canvas.translate(centerX, centerY);
             canvas.drawRect(offsetRect.left + xOffset, offsetRect.top + yOffset,
                     offsetRect.right + xOffset, offsetRect.bottom + yOffset, paint);
-            canvas.restore();
+        }
+
+        if (lastShotX != null && lastShotY != null) {
+            Paint paint = getLastShotPaint();
+            canvas.drawCircle(lastShotX + xOffset, lastShotY + yOffset, 10, paint);
         }
 
         return true;

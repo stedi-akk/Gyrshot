@@ -25,8 +25,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private Mode mode;
 
     private Rect offsetRect;
+
     private float gyroXOffset, gyroYOffset;
     private float centerX, centerY;
+    private float shotX, shotY;
 
     private boolean isTransparent;
 
@@ -81,8 +83,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void onShot() {
+        shotX = -gyroXOffset;
+        shotY = -gyroYOffset;
         for (Layer layer : layers) {
-            if (layer.onShot(centerX, centerY))
+            if (layer.onShot(shotX, shotY))
                 return;
         }
     }
@@ -127,8 +131,9 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void drawDebugLayer(Canvas canvas, String debugText) {
-        debugLayer.showOffsetRect(offsetRect, centerX, centerY);
+        debugLayer.showOffsetRect(offsetRect);
         debugLayer.showDebugText(debugText);
+        debugLayer.showLastShot(shotX, shotY);
         debugLayer.onDraw(canvas, gyroXOffset, gyroYOffset, mode);
     }
 
@@ -168,15 +173,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas = surfaceHolder.lockCanvas();
 
                     synchronized (surfaceHolder) {
+                        canvas.translate(centerX, centerY);
+
                         if (isTransparent)
                             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         else
                             canvas.drawColor(Config.LAYERS_VIEW_BACKGROUND_COLOR);
 
-                        canvas.save();
-                        canvas.translate(centerX, centerY);
                         drawLayers(canvas);
-                        canvas.restore();
 
                         if (Config.SHOW_DEBUG_LAYER)
                             drawDebugLayer(canvas, String.valueOf(fps));
