@@ -11,12 +11,14 @@ import com.stedi.gyrshot.other.FloatRect;
 public class SimpleButton extends Layer {
     private static final float WIDTH = App.dp2px(300);
     private static final float HEIGHT = App.dp2px(60);
+    private static final float PADDING = App.dp2px(2);
 
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    private FloatRect rect = new FloatRect(WIDTH, HEIGHT);
+    private FloatRect boundsRect;
+    private FloatRect drawRect;
 
     private int id;
     private CharSequence text;
@@ -38,17 +40,18 @@ public class SimpleButton extends Layer {
     public void setXYOffset(float xOffset, float yOffset) {
         this.xOffset = xOffset;
         this.yOffset = yOffset;
-        createNewRect();
+        calculateBoundsRect();
+        calculateDrawRect();
     }
 
-    public FloatRect getRect() {
-        return rect;
+    public FloatRect getBoundsRect() {
+        return boundsRect;
     }
 
     @Override
     public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, fillPaint);
-        canvas.drawRect(rect.left, rect.top, rect.right, rect.bottom, borderPaint);
+        canvas.drawRect(drawRect.left, drawRect.top, drawRect.right, drawRect.bottom, fillPaint);
+        canvas.drawRect(drawRect.left, drawRect.top, drawRect.right, drawRect.bottom, borderPaint);
         canvas.drawText(text, 0, text.length(), xOffset, yOffset, textPaint);
         return true;
     }
@@ -62,18 +65,25 @@ public class SimpleButton extends Layer {
         fillPaint.setColor(Color.WHITE);
 
         borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setStrokeWidth(App.dp2px(1));
+        borderPaint.setStrokeWidth(1f);
         borderPaint.setColor(Color.BLACK);
 
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTextSize(HEIGHT / 2);
+
+        calculateBoundsRect();
+        calculateDrawRect();
     }
 
-    private void createNewRect() {
-        float left = rect.left + xOffset;
-        float top = rect.top + yOffset;
-        float right = rect.right + xOffset;
-        float bottom = rect.bottom + yOffset;
-        rect = new FloatRect(left, top, right, bottom);
+    private void calculateBoundsRect() {
+        if (boundsRect == null)
+            boundsRect = new FloatRect(WIDTH, HEIGHT);
+        boundsRect = new FloatRect(boundsRect.left + xOffset, boundsRect.top + yOffset,
+                boundsRect.right + xOffset, boundsRect.bottom + yOffset);
+    }
+
+    private void calculateDrawRect() {
+        drawRect = new FloatRect(boundsRect.left + PADDING, boundsRect.top + PADDING,
+                boundsRect.right - PADDING, boundsRect.bottom - PADDING);
     }
 }

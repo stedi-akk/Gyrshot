@@ -33,12 +33,12 @@ public class StartMenuLayer extends Layer implements SimpleButton.ShotCallback {
         for (Type type : Type.values()) {
             SimpleButton btn = new SimpleButton(type.id, App.getRes().getText(type.resTitle), this);
             buttons.add(btn);
-            buttonsHeight += btn.getRect().getHeight();
+            buttonsHeight += btn.getBoundsRect().getHeight();
         }
 
         for (int i = 0; i < buttons.size(); i++) {
             SimpleButton btn = buttons.get(i);
-            float btnHeight = btn.getRect().getHeight();
+            float btnHeight = btn.getBoundsRect().getHeight();
             btn.setXYOffset(0, -buttonsHeight / 2 + btnHeight / 2 + i * btnHeight);
         }
     }

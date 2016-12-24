@@ -13,7 +13,7 @@ public class ZoneLayer extends Layer {
     public ZoneLayer() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(App.dp2px(1));
+        paint.setStrokeWidth(App.dp2px(2));
         paint.setColor(Color.GREEN);
     }
 
