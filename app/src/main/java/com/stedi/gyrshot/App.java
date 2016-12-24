@@ -1,6 +1,7 @@
 package com.stedi.gyrshot;
 
 import android.app.Application;
+import android.content.res.Resources;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -35,6 +36,10 @@ public class App extends Application {
         Mode.overrideZoneSize(Mode.GAME,
                 zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
                 zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
+    }
+
+    public static Resources getRes() {
+        return instance.getResources();
     }
 
     public static float dp2px(int dp) {

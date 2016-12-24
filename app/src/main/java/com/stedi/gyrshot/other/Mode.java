@@ -18,7 +18,7 @@ public enum Mode {
     }
 
     private void setZoneSize(float zoneWidthPx, float zoneHeightPx) {
-        this.zoneRect = new FloatRect(-zoneWidthPx / 2, -zoneHeightPx / 2, zoneWidthPx / 2, zoneHeightPx / 2);
+        this.zoneRect = new FloatRect(zoneWidthPx, zoneHeightPx);
     }
 
     public FloatRect getZoneRect() {
