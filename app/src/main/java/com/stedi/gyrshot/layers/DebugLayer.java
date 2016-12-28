@@ -6,6 +6,7 @@ import android.graphics.Paint;
 
 import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.PaintFactory;
 
 public class DebugLayer extends Layer {
     private Paint debugTextPaint;
@@ -19,27 +20,24 @@ public class DebugLayer extends Layer {
 
     private Paint getDebugTextPaint() {
         if (debugTextPaint == null) {
-            debugTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            debugTextPaint = PaintFactory.create(Color.WHITE);
             debugTextPaint.setTextSize(App.dp2px(15));
-            debugTextPaint.setColor(Color.WHITE);
         }
         return debugTextPaint;
     }
 
     private Paint getRectPaint() {
         if (actualRectPaint == null) {
-            actualRectPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            actualRectPaint = PaintFactory.create(Color.RED);
             actualRectPaint.setStyle(Paint.Style.STROKE);
             actualRectPaint.setStrokeWidth(1f);
-            actualRectPaint.setColor(Color.RED);
         }
         return actualRectPaint;
     }
 
     private Paint getLastShotPaint() {
         if (lastShotPaint == null) {
-            lastShotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            lastShotPaint.setColor(Color.YELLOW);
+            lastShotPaint = PaintFactory.create(Color.YELLOW);
         }
         return lastShotPaint;
     }

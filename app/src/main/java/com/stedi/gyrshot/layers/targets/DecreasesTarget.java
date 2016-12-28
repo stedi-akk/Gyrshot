@@ -4,23 +4,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.config.GameConfig;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.PaintFactory;
 
 public class DecreasesTarget extends Target {
-    public static final float INITIAL_RADIUS = (int) App.dp2px(50);
-
-    private static final int DECREASE_TIME = 5000;
+    private static final float INITIAL_RADIUS = GameConfig.DECREASES_TARGET_SIZE;
+    private static final long DECREASE_TIME = GameConfig.DECREASES_TARGET_LIFE_TIME;
     private static final float RADIUS_STEP = INITIAL_RADIUS / DECREASE_TIME;
-    private static final Paint PAINT;
+
+    private final Paint paint = PaintFactory.create(Color.RED);
 
     private float radius;
     private long firstDrawTime;
-
-    static {
-        PAINT = new Paint(Paint.ANTI_ALIAS_FLAG);
-        PAINT.setColor(Color.RED);
-    }
 
     public DecreasesTarget(float x, float y) {
         super(x, y);
@@ -38,11 +34,11 @@ public class DecreasesTarget extends Target {
             if (timeDiff >= DECREASE_TIME)
                 return false;
             radius = INITIAL_RADIUS - (RADIUS_STEP * timeDiff);
-            canvas.drawCircle(x, y, radius, PAINT);
+            canvas.drawCircle(x, y, radius, paint);
             return true;
         } else {
             radius = INITIAL_RADIUS;
-            canvas.drawCircle(x, y, radius, PAINT);
+            canvas.drawCircle(x, y, radius, paint);
             firstDrawTime = System.currentTimeMillis();
             return true;
         }

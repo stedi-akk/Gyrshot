@@ -1,15 +1,14 @@
 package com.stedi.gyrshot.other;
 
 /**
-   ______top_______
-  |                |
-  |                |
-  |                |
-left      0      right
-  |                |
-  |                |
-  |_____      _____|
-        bottom
+ * _______top________
+ * |                |
+ * |                |
+ * |                |
+ * left    0    right
+ * |                |
+ * |                |
+ * |_____bottom_____|
  */
 
 public class FloatRect {

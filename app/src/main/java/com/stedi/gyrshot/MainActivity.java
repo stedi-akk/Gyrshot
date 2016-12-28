@@ -10,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.stedi.gyrshot.camera.CameraActivity;
+import com.stedi.gyrshot.config.Config;
 import com.stedi.gyrshot.layers.LayersView;
-import com.stedi.gyrshot.layers.TargetsLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
 import com.stedi.gyrshot.other.Mode;

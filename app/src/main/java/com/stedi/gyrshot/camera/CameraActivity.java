@@ -6,7 +6,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
-import com.stedi.gyrshot.Config;
+import com.stedi.gyrshot.config.Config;
 
 public abstract class CameraActivity extends Activity {
     private boolean hasCamera;

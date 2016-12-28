@@ -6,15 +6,15 @@ import android.graphics.Paint;
 
 import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.PaintFactory;
 
 public class ZoneLayer extends Layer {
     private Paint paint;
 
     public ZoneLayer() {
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint = PaintFactory.create(Color.GREEN);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(App.dp2px(2));
-        paint.setColor(Color.GREEN);
     }
 
     @Override

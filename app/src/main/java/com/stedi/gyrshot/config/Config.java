@@ -1,7 +1,11 @@
-package com.stedi.gyrshot;
+package com.stedi.gyrshot.config;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 
+/**
+ * Application control
+ */
 public final class Config {
     public static final float GYROSCOPE_ACCURACY = 1.5f;
     public static final boolean ALLOW_CAMERA = true;
@@ -14,4 +18,5 @@ public final class Config {
     public static final boolean ATTACH_ZONE_RECT_TO_SCREEN_EDGES = true;
     public static final int[] STATIC_MENU_SIZE = new int[]{500, 500};
     public static final int[] STATIC_GAME_SIZE = new int[]{1000, 1000};
+    public static final int PAINT_FLAGS = Paint.ANTI_ALIAS_FLAG;
 }

@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.util.Log;
 import android.util.TypedValue;
 
+import com.stedi.gyrshot.config.Config;
 import com.stedi.gyrshot.other.Mode;
 
 import java.util.Random;

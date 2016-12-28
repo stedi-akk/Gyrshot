@@ -4,18 +4,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.config.Styles;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.PaintFactory;
 
 public class SimpleButton extends Layer {
-    private static final float WIDTH = App.dp2px(300);
-    private static final float HEIGHT = App.dp2px(60);
-    private static final float PADDING = App.dp2px(2);
-
-    private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint fillPaint = PaintFactory.create(Color.WHITE);
+    private final Paint borderPaint = PaintFactory.create(PaintFactory.Type.BUTTON_BODY);
+    private final Paint textPaint = PaintFactory.create(PaintFactory.Type.BUTTON_TEXT);
 
     private FloatRect boundsRect;
     private FloatRect drawRect;
@@ -62,28 +59,20 @@ public class SimpleButton extends Layer {
     }
 
     private void init() {
-        fillPaint.setColor(Color.WHITE);
-
-        borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setStrokeWidth(1f);
-        borderPaint.setColor(Color.BLACK);
-
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        textPaint.setTextSize(HEIGHT / 2);
-
         calculateBoundsRect();
         calculateDrawRect();
     }
 
     private void calculateBoundsRect() {
         if (boundsRect == null)
-            boundsRect = new FloatRect(WIDTH, HEIGHT);
+            boundsRect = new FloatRect(Styles.Sizes.BUTTON_WIDTH, Styles.Sizes.BUTTON_HEIGHT);
         boundsRect = new FloatRect(boundsRect.left + xOffset, boundsRect.top + yOffset,
                 boundsRect.right + xOffset, boundsRect.bottom + yOffset);
     }
 
     private void calculateDrawRect() {
-        drawRect = new FloatRect(boundsRect.left + PADDING, boundsRect.top + PADDING,
-                boundsRect.right - PADDING, boundsRect.bottom - PADDING);
+        float padding = Styles.Sizes.BUTTON_PADDING;
+        drawRect = new FloatRect(boundsRect.left + padding, boundsRect.top + padding,
+                boundsRect.right - padding, boundsRect.bottom - padding);
     }
 }
