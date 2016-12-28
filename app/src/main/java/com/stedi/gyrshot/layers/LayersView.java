@@ -65,6 +65,12 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         layers.add(layer);
     }
 
+    public boolean removeLayer(Layer layer) {
+        if (layers == null)
+            return false;
+        return layers.remove(layer);
+    }
+
     public void setTransparent(boolean value) {
         isTransparent = value;
     }
@@ -84,13 +90,15 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             gyroYOffset = actualRect.bottom;
     }
 
-    public void onShot() {
+    public ShotCallback onShot() {
         shotX = -gyroXOffset;
         shotY = -gyroYOffset;
         for (Layer layer : layers) {
-            if (layer.onShot(shotX, shotY))
-                return;
+            ShotCallback callback = layer.onShot(shotX, shotY);
+            if (callback != null)
+                return callback;
         }
+        return null;
     }
 
     @Override

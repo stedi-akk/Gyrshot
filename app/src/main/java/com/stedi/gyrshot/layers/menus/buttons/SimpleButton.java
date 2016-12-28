@@ -6,6 +6,7 @@ import android.graphics.Paint;
 
 import com.stedi.gyrshot.config.Styles;
 import com.stedi.gyrshot.layers.Layer;
+import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
 
@@ -14,23 +15,25 @@ public class SimpleButton extends Layer {
     private final Paint borderPaint = PaintFactory.create(PaintFactory.Type.BUTTON_BODY);
     private final Paint textPaint = PaintFactory.create(PaintFactory.Type.BUTTON_TEXT);
 
+    public class OnShot implements ShotCallback {
+        public final int id;
+
+        public OnShot(int id) {
+            this.id = id;
+        }
+    }
+
     private FloatRect boundsRect;
     private FloatRect drawRect;
 
     private int id;
     private CharSequence text;
-    private ShotCallback callback;
 
     private float xOffset, yOffset;
 
-    public interface ShotCallback {
-        void onButtonShot(int id);
-    }
-
-    public SimpleButton(int id, CharSequence text, ShotCallback callback) {
+    public SimpleButton(int id, CharSequence text) {
         this.id = id;
         this.text = text;
-        this.callback = callback;
         init();
     }
 
@@ -54,8 +57,11 @@ public class SimpleButton extends Layer {
     }
 
     @Override
-    public boolean onShot(float shotX, float shotY) {
-        return super.onShot(shotX, shotY);
+    public OnShot onShot(float shotX, float shotY) {
+        if (shotX >= drawRect.left && shotX <= drawRect.right
+                && shotY >= drawRect.top && shotY <= drawRect.bottom)
+            return new OnShot(id);
+        return null;
     }
 
     private void init() {

@@ -30,14 +30,17 @@ public class TargetsLayer extends Layer {
     }
 
     @Override
-    public boolean onShot(float shotX, float shotY) {
+    public ShotCallback onShot(float shotX, float shotY) {
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
-            if (target != null && target.onShot(shotX, shotY)) {
-                targets.set(i, null);
-                return true;
+            if (target != null) {
+                ShotCallback callback = target.onShot(shotX, shotY);
+                if (callback != null) {
+                    targets.set(i, null);
+                    return callback;
+                }
             }
         }
-        return false;
+        return null;
     }
 }

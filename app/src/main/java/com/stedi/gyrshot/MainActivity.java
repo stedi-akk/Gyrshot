@@ -8,12 +8,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.config.Config;
+import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
+import com.stedi.gyrshot.layers.ShotCallback;
+import com.stedi.gyrshot.layers.TargetsLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
+import com.stedi.gyrshot.layers.targets.DecreasesTarget;
 import com.stedi.gyrshot.other.Mode;
 import com.stedi.gyrshot.overlay.OverlayView;
 
@@ -26,6 +31,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     private Sensor gyroSensor;
 
     private float lastGyroX, lastGyroY;
+    private Layer mainLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +86,19 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     @Override
     public void onShot() {
-        layersView.onShot();
+        ShotCallback callback = layersView.onShot();
+        if (callback != null) {
+            if (callback instanceof DecreasesTarget.OnShot) {
+                Toast.makeText(this, "Gotcha !", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (callback instanceof StartMenuLayer.OnShot) {
+                layersView.removeLayer(mainLayer);
+                mainLayer = new TargetsLayer();
+                layersView.addLayer(mainLayer);
+                return;
+            }
+        }
     }
 
     @Override
@@ -96,8 +114,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     private void initLayers() {
         layersView.setMode(Mode.MENU);
         layersView.addLayer(new ZoneLayer());
-//        layersView.addLayer(new TargetsLayer());
-        layersView.addLayer(new StartMenuLayer());
+        mainLayer = new StartMenuLayer();
+        layersView.addLayer(mainLayer);
     }
 
     private void initOverlay() {
