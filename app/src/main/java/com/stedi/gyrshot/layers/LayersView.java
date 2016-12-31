@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.stedi.gyrshot.config.Config;
+import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.Mode;
 
@@ -118,7 +118,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void calculateActualRect() {
-        if (Config.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
+        if (AppConfig.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
             FloatRect rect = mode.getZoneRect();
             float leftEdge = rect.left + screenHalfWidth;
             float rightEdge = rect.right - screenHalfWidth;
@@ -136,10 +136,12 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void drawDebugLayer(Canvas canvas) {
-        debugLayer.showZoneRect(true);
-        debugLayer.showActualRect(true);
-        debugLayer.showDebugText(String.valueOf(fps));
-        debugLayer.showLastShot(shotX, shotY);
+        debugLayer.showZoneRect(AppConfig.DEBUG_LAYER_SHOW_ZONE_RECT);
+        debugLayer.showActualRect(AppConfig.DEBUG_LAYER_SHOW_ACTUAL_RECT);
+        if (AppConfig.DEBUG_LAYER_SHOW_FPS)
+            debugLayer.showDebugText(String.valueOf(fps));
+        if (AppConfig.DEBUG_LAYER_SHOW_LAST_SHOT)
+            debugLayer.showLastShot(shotX, shotY);
         debugLayer.onDraw(canvas, mode.getZoneRect(), actualRect);
     }
 
@@ -154,40 +156,52 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void run() {
-            long refreshTime = System.currentTimeMillis();
+            long sleepPerFrame = 0;
+            if (AppConfig.LAYERS_VIEW_MAX_FPS > 0)
+                sleepPerFrame = 1000 / AppConfig.LAYERS_VIEW_MAX_FPS;
 
+            if (AppConfig.SHOW_DEBUG_LAYER && debugLayer == null)
+                debugLayer = new DebugLayer();
+
+            boolean countFps = AppConfig.SHOW_DEBUG_LAYER && AppConfig.DEBUG_LAYER_SHOW_FPS;
+            long lastFrameTime = 0;
             int framesCount = 0;
 
             while (run) {
                 Canvas canvas = null;
                 try {
-                    sleep(1000 / Config.LAYERS_VIEW_FPS);
-
-                    if (Config.SHOW_DEBUG_LAYER) {
-                        if (debugLayer == null)
-                            debugLayer = new DebugLayer();
-
-                        framesCount++;
-                        if (System.currentTimeMillis() - refreshTime >= 1000) {
-                            refreshTime = System.currentTimeMillis();
-                            fps = framesCount;
-                            framesCount = 0;
-                        }
-                    }
+                    if (sleepPerFrame > 0)
+                        sleep(sleepPerFrame);
 
                     canvas = surfaceHolder.lockCanvas();
 
                     synchronized (surfaceHolder) {
+                        // translate canvas to the center, and move it by gyroscope offset values
                         canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
 
+                        // clear last frame
                         if (isTransparent)
                             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         else
-                            canvas.drawColor(Config.LAYERS_VIEW_BACKGROUND_COLOR);
+                            canvas.drawColor(AppConfig.LAYERS_VIEW_BACKGROUND_COLOR);
 
+                        // main draw logic
                         drawLayers(canvas);
-                        if (Config.SHOW_DEBUG_LAYER)
+
+                        // draw debug info with special layer
+                        if (AppConfig.SHOW_DEBUG_LAYER)
                             drawDebugLayer(canvas);
+
+                        // fps count
+                        if (countFps) {
+                            framesCount++;
+                            long frameTime = System.currentTimeMillis();
+                            if (frameTime - lastFrameTime >= 1000) {
+                                lastFrameTime = frameTime;
+                                fps = framesCount;
+                                framesCount = 0;
+                            }
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -21,7 +21,7 @@ public class DebugLayer extends Layer {
     private Paint getDebugTextPaint() {
         if (debugTextPaint == null) {
             debugTextPaint = PaintFactory.create(Color.WHITE);
-            debugTextPaint.setTextSize(App.dp2px(15));
+            debugTextPaint.setTextSize(App.dp2px(20));
         }
         return debugTextPaint;
     }
@@ -65,7 +65,7 @@ public class DebugLayer extends Layer {
             Paint paint = getDebugTextPaint();
             paint.setColor(Color.BLACK);
             canvas.drawText(debugText, paint.getTextSize() + 1, paint.getTextSize() * 2 + 1, paint);
-            paint.setColor(Color.LTGRAY);
+            paint.setColor(Color.WHITE);
             canvas.drawText(debugText, paint.getTextSize(), paint.getTextSize() * 2, paint);
         }
 

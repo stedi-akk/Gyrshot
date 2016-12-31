@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.config.Styles;
+import com.stedi.gyrshot.constants.Styles;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.other.FloatRect;

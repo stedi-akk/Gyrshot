@@ -1,4 +1,4 @@
-package com.stedi.gyrshot.config;
+package com.stedi.gyrshot.constants;
 
 import android.graphics.Color;
 

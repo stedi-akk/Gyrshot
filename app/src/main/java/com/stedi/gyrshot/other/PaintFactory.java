@@ -2,8 +2,8 @@ package com.stedi.gyrshot.other;
 
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.config.Config;
-import com.stedi.gyrshot.config.Styles;
+import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.Styles;
 
 public class PaintFactory {
     public enum Type {
@@ -13,7 +13,7 @@ public class PaintFactory {
     }
 
     public static Paint create() {
-        return new Paint(Config.PAINT_FLAGS);
+        return new Paint(AppConfig.PAINT_FLAGS);
     }
 
     public static Paint create(int color) {

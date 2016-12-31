@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.stedi.gyrshot.config.Config;
+import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.other.Mode;
 
 import java.util.Random;
@@ -22,7 +22,7 @@ public class App extends Application {
 
         random = new Random();
 
-        if (Config.MODE_ZONE_SIZE_DEPENDS_ON_SCREEN)
+        if (AppConfig.MODE_ZONE_SIZE_DEPENDS_ON_SCREEN)
             initModeZoneSizeByScreen();
     }
 
@@ -31,12 +31,12 @@ public class App extends Application {
                 getResources().getDisplayMetrics().widthPixels);
 
         Mode.overrideZoneSize(Mode.MENU,
-                zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
-                zoneSizeByScreen * Config.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
+                zoneSizeByScreen * AppConfig.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
+                zoneSizeByScreen * AppConfig.MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
 
         Mode.overrideZoneSize(Mode.GAME,
-                zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
-                zoneSizeByScreen * Config.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
+                zoneSizeByScreen * AppConfig.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
+                zoneSizeByScreen * AppConfig.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
     }
 
     public static Resources getRes() {

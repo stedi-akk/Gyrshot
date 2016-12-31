@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
-import com.stedi.gyrshot.config.Config;
+import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
@@ -76,8 +76,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     public void onSensorChanged(SensorEvent event) {
         float gyroX = (float) Math.toDegrees(event.values[0]);
         float gyroY = (float) -Math.toDegrees(event.values[1]);
-        if (Math.abs(gyroX - lastGyroX) > Config.GYROSCOPE_ACCURACY
-                || Math.abs(gyroY - lastGyroY) > Config.GYROSCOPE_ACCURACY) {
+        if (Math.abs(gyroX - lastGyroX) > AppConfig.GYROSCOPE_ACCURACY
+                || Math.abs(gyroY - lastGyroY) > AppConfig.GYROSCOPE_ACCURACY) {
             lastGyroX = gyroX;
             lastGyroY = gyroY;
             layersView.updateFromGyroscope(lastGyroX, lastGyroY);

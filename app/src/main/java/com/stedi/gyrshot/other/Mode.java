@@ -1,11 +1,11 @@
 package com.stedi.gyrshot.other;
 
 import com.stedi.gyrshot.App;
-import com.stedi.gyrshot.config.Config;
+import com.stedi.gyrshot.constants.AppConfig;
 
 public enum Mode {
-    MENU(Config.STATIC_MENU_SIZE[0], Config.STATIC_MENU_SIZE[1]),
-    GAME(Config.STATIC_GAME_SIZE[0], Config.STATIC_GAME_SIZE[1]);
+    MENU(AppConfig.STATIC_MENU_SIZE[0], AppConfig.STATIC_MENU_SIZE[1]),
+    GAME(AppConfig.STATIC_GAME_SIZE[0], AppConfig.STATIC_GAME_SIZE[1]);
 
     private FloatRect zoneRect;
 
