@@ -138,10 +138,18 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private void drawDebugLayer(Canvas canvas) {
         debugLayer.showZoneRect(AppConfig.DEBUG_LAYER_SHOW_ZONE_RECT);
         debugLayer.showActualRect(AppConfig.DEBUG_LAYER_SHOW_ACTUAL_RECT);
-        if (AppConfig.DEBUG_LAYER_SHOW_FPS)
-            debugLayer.showDebugText(String.valueOf(fps));
+
+        if (AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT) {
+            debugLayer.clearDebugText();
+            debugLayer.prepareDebugText(gyroXOffset, gyroYOffset);
+            debugLayer.addDebugText("fps: " + String.valueOf(fps));
+            debugLayer.addDebugText("gyroXOffset: " + String.valueOf(gyroXOffset));
+            debugLayer.addDebugText("gyroYOffset: " + String.valueOf(gyroYOffset));
+        }
+
         if (AppConfig.DEBUG_LAYER_SHOW_LAST_SHOT)
             debugLayer.showLastShot(shotX, shotY);
+
         debugLayer.onDraw(canvas, mode.getZoneRect(), actualRect);
     }
 
@@ -163,7 +171,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             if (AppConfig.SHOW_DEBUG_LAYER && debugLayer == null)
                 debugLayer = new DebugLayer();
 
-            boolean countFps = AppConfig.SHOW_DEBUG_LAYER && AppConfig.DEBUG_LAYER_SHOW_FPS;
+            boolean countFps = AppConfig.SHOW_DEBUG_LAYER && AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT;
             long lastFrameTime = 0;
             int framesCount = 0;
 

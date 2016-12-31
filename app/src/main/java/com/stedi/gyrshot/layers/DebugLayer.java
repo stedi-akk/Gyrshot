@@ -13,7 +13,8 @@ public class DebugLayer extends Layer {
     private Paint actualRectPaint;
     private Paint lastShotPaint;
 
-    private String debugText;
+    private StringBuilder debugText;
+    private float debugTextXOffset, debugTextYOffset;
     private boolean showActualRect;
     private boolean showZoneRect;
     private Float lastShotX, lastShotY;
@@ -21,7 +22,7 @@ public class DebugLayer extends Layer {
     private Paint getDebugTextPaint() {
         if (debugTextPaint == null) {
             debugTextPaint = PaintFactory.create(Color.WHITE);
-            debugTextPaint.setTextSize(App.dp2px(20));
+            debugTextPaint.setTextSize(App.dp2px(18));
         }
         return debugTextPaint;
     }
@@ -42,8 +43,21 @@ public class DebugLayer extends Layer {
         return lastShotPaint;
     }
 
-    public void showDebugText(String debugText) {
-        this.debugText = debugText;
+    public void prepareDebugText(float gyroXOffset, float gyroYOffset) {
+        if (debugText == null)
+            debugText = new StringBuilder();
+        this.debugTextXOffset = gyroXOffset;
+        this.debugTextYOffset = gyroYOffset;
+    }
+
+    public void addDebugText(String debugText) {
+        if (debugText != null)
+            this.debugText.append(debugText).append("\n");
+    }
+
+    public void clearDebugText() {
+        if (debugText != null)
+            debugText.setLength(0);
     }
 
     public void showActualRect(boolean showActualRect) {
@@ -62,11 +76,21 @@ public class DebugLayer extends Layer {
     @Override
     public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (debugText != null) {
+            canvas.save();
+            canvas.translate(-debugTextXOffset, -debugTextYOffset); // ignoring offset from gyroscope
+            canvas.translate(-canvas.getWidth() / 2, -canvas.getHeight() / 2); // left-top position
             Paint paint = getDebugTextPaint();
-            paint.setColor(Color.BLACK);
-            canvas.drawText(debugText, paint.getTextSize() + 1, paint.getTextSize() * 2 + 1, paint);
-            paint.setColor(Color.WHITE);
-            canvas.drawText(debugText, paint.getTextSize(), paint.getTextSize() * 2, paint);
+            int i = 0;
+            for (String line : debugText.toString().split("\n")) {
+                paint.setColor(Color.BLACK);
+                canvas.drawText(line, paint.getTextSize() + 1,
+                        paint.getTextSize() * i + paint.getTextSize() * 2 + 1, paint);
+                paint.setColor(Color.WHITE);
+                canvas.drawText(line, paint.getTextSize(),
+                        paint.getTextSize() * i + paint.getTextSize() * 2, paint);
+                i++;
+            }
+            canvas.restore();
         }
 
         if (showActualRect) {
