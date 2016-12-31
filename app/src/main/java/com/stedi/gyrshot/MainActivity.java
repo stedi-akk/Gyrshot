@@ -93,9 +93,17 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
                 return;
             }
             if (callback instanceof StartMenuLayer.OnShot) {
-                layersView.removeLayer(mainLayer);
-                mainLayer = new TargetsLayer();
-                layersView.addLayer(mainLayer);
+                StartMenuLayer.OnShot onShot = (StartMenuLayer.OnShot) callback;
+                switch (onShot.type) {
+                    case START_GAME:
+                        layersView.removeLayer(mainLayer);
+                        mainLayer = new TargetsLayer();
+                        layersView.addLayer(mainLayer);
+                        break;
+                    case EXIT:
+                        finish();
+                        break;
+                }
                 return;
             }
         }
