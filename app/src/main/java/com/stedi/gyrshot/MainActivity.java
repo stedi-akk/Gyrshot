@@ -31,7 +31,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     private Sensor gyroSensor;
 
     private float lastGyroX, lastGyroY;
-    private Layer mainLayer;
+
+    private Layer currentLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +41,8 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         cameraPreviewContainer = (ViewGroup) findViewById(R.id.main_activity_camera_preview_container);
         layersView = (LayersView) findViewById(R.id.main_activity_layers_view);
         overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
-        initLayers();
-        initOverlay();
         initGyroscope();
+        initLayersAndOverlay();
     }
 
     @Override
@@ -96,9 +96,11 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
                 StartMenuLayer.OnShot onShot = (StartMenuLayer.OnShot) callback;
                 switch (onShot.type) {
                     case START_GAME:
-                        layersView.removeLayer(mainLayer);
-                        mainLayer = new TargetsLayer();
-                        layersView.addLayer(mainLayer);
+                        Mode.setCurrent(Mode.GAME);
+                        currentLayer = new TargetsLayer();
+                        layersView.setMode(Mode.getCurrent());
+                        overlayView.setMode(Mode.getCurrent());
+                        layersView.addLayer(currentLayer, true);
                         break;
                     case EXIT:
                         finish();
@@ -119,15 +121,15 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     }
 
-    private void initLayers() {
-        layersView.setMode(Mode.MENU);
-        layersView.addLayer(new ZoneLayer());
-        mainLayer = new StartMenuLayer();
-        layersView.addLayer(mainLayer);
-    }
-
-    private void initOverlay() {
-        overlayView.setMode(Mode.MENU);
+    private void initLayersAndOverlay() {
+        if (Mode.getCurrent() == null) { // first launch
+            Mode.setCurrent(Mode.MENU);
+            layersView.addLayer(new ZoneLayer());
+            currentLayer = new StartMenuLayer();
+            layersView.addLayer(currentLayer, true);
+        }
+        layersView.setMode(Mode.getCurrent());
+        overlayView.setMode(Mode.getCurrent());
         overlayView.setListener(this);
     }
 
