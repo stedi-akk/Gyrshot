@@ -13,11 +13,11 @@ import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.Mode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
-    private List<Layer> layers;
+    private final LayersManager layersManager = LayersManager.getInstance();
+
     private DebugLayer debugLayer;
 
     private RefreshThread thread;
@@ -60,15 +60,15 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void addLayer(Layer layer) {
-        if (layers == null)
-            layers = new ArrayList<>();
-        layers.add(layer);
+        layersManager.addLayer(layer);
     }
 
     public boolean removeLayer(Layer layer) {
-        if (layers == null)
-            return false;
-        return layers.remove(layer);
+        return layersManager.removeLayer(layer);
+    }
+
+    public List<Layer> getLayers() {
+        return layersManager.getLayers();
     }
 
     public void setTransparent(boolean value) {
@@ -93,7 +93,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     public ShotCallback onShot() {
         shotX = -gyroXOffset;
         shotY = -gyroYOffset;
-        for (Layer layer : layers) {
+        for (Layer layer : layersManager.getLayers()) {
             ShotCallback callback = layer.onShot(shotX, shotY);
             if (callback != null)
                 return callback;
@@ -131,7 +131,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void drawLayers(Canvas canvas) {
-        for (Layer layer : layers)
+        for (Layer layer : layersManager.getLayers())
             layer.onDraw(canvas, mode.getZoneRect(), actualRect);
     }
 
