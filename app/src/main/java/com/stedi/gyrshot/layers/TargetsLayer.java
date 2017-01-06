@@ -2,6 +2,7 @@ package com.stedi.gyrshot.layers;
 
 import android.graphics.Canvas;
 
+import com.stedi.gyrshot.constants.Games;
 import com.stedi.gyrshot.layers.targets.Target;
 import com.stedi.gyrshot.layers.targets.TargetsFactory;
 import com.stedi.gyrshot.other.FloatRect;
@@ -17,13 +18,13 @@ public class TargetsLayer extends Layer {
         if (targets == null) {
             targets = new ArrayList<>();
             for (int i = 0; i < 10; i++)
-                targets.add(TargetsFactory.create(TargetsFactory.Type.DECREASES, actualRect));
+                targets.add(TargetsFactory.create(Games.Type.DECREASES, actualRect));
         }
 
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
             if (target == null || !target.onDraw(canvas, zoneRect, actualRect))
-                targets.set(i, TargetsFactory.create(TargetsFactory.Type.DECREASES, actualRect));
+                targets.set(i, TargetsFactory.create(Games.Type.DECREASES, actualRect));
         }
 
         return true;

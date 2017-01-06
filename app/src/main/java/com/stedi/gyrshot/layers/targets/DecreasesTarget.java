@@ -4,14 +4,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.constants.GamesConfig;
+import com.stedi.gyrshot.constants.Games;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
 
 public class DecreasesTarget extends Target {
-    private static final float INITIAL_RADIUS = GamesConfig.DECREASES_TARGET_SIZE;
-    private static final long DECREASE_TIME = GamesConfig.DECREASES_TARGET_LIFE_TIME;
+    private static final float INITIAL_RADIUS = Games.DECREASES_TARGET_SIZE;
+    private static final long DECREASE_TIME = Games.DECREASES_TARGET_LIFE_TIME;
     private static final float RADIUS_STEP = INITIAL_RADIUS / DECREASE_TIME;
 
     public class OnShot implements ShotCallback {

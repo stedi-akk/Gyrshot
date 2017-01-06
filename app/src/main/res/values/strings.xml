@@ -2,4 +2,8 @@
     <string name="app_name">Gyrshot</string>
     <string name="start_game">Start Game</string>
     <string name="exit">Exit</string>
+    <string name="decreases_game">Decr</string>
+    <string name="fast_disappears_game">Disap</string>
+    <string name="movable_game">Movab</string>
+    <string name="movable_decreases_game">Movadecr</string>
 </resources>
