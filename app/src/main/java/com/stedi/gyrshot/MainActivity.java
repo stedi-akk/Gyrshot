@@ -14,8 +14,9 @@ import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
-import com.stedi.gyrshot.layers.TargetsLayer;
+import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
+import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
 import com.stedi.gyrshot.layers.targets.DecreasesTarget;
 import com.stedi.gyrshot.other.Mode;
@@ -95,16 +96,19 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
                 StartMenuLayer.OnShot onShot = (StartMenuLayer.OnShot) callback;
                 switch (onShot.type) {
                     case START_GAME:
-                        currentMode = Mode.GAME;
-                        layersView.setMode(currentMode);
-                        overlayView.setMode(currentMode);
-                        layersView.addLayer(new TargetsLayer(), true);
+                        changeModeTo(Mode.MENU);
+                        layersView.addLayer(new PickGameMenuLayer(), true);
                         break;
                     case EXIT:
                         finish();
                         break;
                 }
                 return;
+            }
+            if (callback instanceof PickGameMenuLayer.OnShot) {
+                PickGameMenuLayer.OnShot onShot = (PickGameMenuLayer.OnShot) callback;
+                changeModeTo(Mode.GAME);
+                layersView.addLayer(new GameLayer(onShot.type), true);
             }
         }
     }
@@ -120,14 +124,20 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     }
 
     private void initLayersAndOverlay() {
-        if (currentMode == null) { // first launch
-            currentMode = Mode.MENU;
+        Mode initMode = currentMode;
+        if (initMode == null) { // first launch
+            initMode = Mode.MENU;
             layersView.addLayer(new ZoneLayer());
             layersView.addLayer(new StartMenuLayer(), true);
         }
+        changeModeTo(initMode);
+        overlayView.setListener(this);
+    }
+
+    private void changeModeTo(Mode mode) {
+        currentMode = mode;
         layersView.setMode(currentMode);
         overlayView.setMode(currentMode);
-        overlayView.setListener(this);
     }
 
     private void initGyroscope() {

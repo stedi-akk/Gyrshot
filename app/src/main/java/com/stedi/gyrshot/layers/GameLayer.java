@@ -10,21 +10,30 @@ import com.stedi.gyrshot.other.FloatRect;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TargetsLayer extends Layer {
+public class GameLayer extends Layer {
+    private Games.Type type;
     private List<Target> targets;
+
+    public GameLayer(Games.Type type) {
+        this.type = type;
+    }
 
     @Override
     public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (targets == null) {
             targets = new ArrayList<>();
-            for (int i = 0; i < 10; i++)
-                targets.add(TargetsFactory.create(Games.Type.DECREASES, actualRect));
+            for (int i = 0; i < 10; i++) {
+                Target target = TargetsFactory.create(type, actualRect);
+                if (target == null)
+                    continue;
+                targets.add(target);
+            }
         }
 
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
             if (target == null || !target.onDraw(canvas, zoneRect, actualRect))
-                targets.set(i, TargetsFactory.create(Games.Type.DECREASES, actualRect));
+                targets.set(i, TargetsFactory.create(type, actualRect));
         }
 
         return true;
