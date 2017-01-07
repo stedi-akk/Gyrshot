@@ -13,6 +13,8 @@ import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.Mode;
 
+import java.util.Stack;
+
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private final LayersManager layersManager = LayersManager.getInstance();
 
@@ -67,6 +69,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     public boolean removeLayer(Layer layer) {
         return layersManager.removeLayer(layer);
+    }
+
+    public boolean popBackStack() {
+        return layersManager.popBackStack();
+    }
+
+    public Stack<Layer> getBackStack() {
+        return layersManager.getBackStack();
     }
 
     public void setTransparent(boolean value) {

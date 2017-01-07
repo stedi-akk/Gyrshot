@@ -12,9 +12,10 @@ import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.layers.GameLayer;
+import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
-import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
 import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
@@ -43,6 +44,12 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
         initGyroscope();
         initLayersAndOverlay();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (layersView.getBackStack().size() <= 1)
+            super.onBackPressed();
     }
 
     @Override
@@ -98,6 +105,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
                     case START_GAME:
                         changeModeTo(Mode.MENU);
                         layersView.addLayer(new PickGameMenuLayer(), true);
+                        invalidateOverlayBackButton();
                         break;
                     case EXIT:
                         finish();
@@ -109,7 +117,21 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
                 PickGameMenuLayer.OnShot onShot = (PickGameMenuLayer.OnShot) callback;
                 changeModeTo(Mode.GAME);
                 layersView.addLayer(new GameLayer(onShot.type), true);
+                invalidateOverlayBackButton();
             }
+        }
+    }
+
+    @Override
+    public void onBackClick() {
+        boolean result = layersView.popBackStack();
+        invalidateOverlayBackButton();
+        if (result) {
+            Layer layer = layersView.getBackStack().peek();
+            if (layer instanceof GameLayer)
+                changeModeTo(Mode.GAME);
+            else
+                changeModeTo(Mode.MENU);
         }
     }
 
@@ -123,6 +145,11 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     }
 
+    private void invalidateOverlayBackButton() {
+        boolean visible = layersView.getBackStack().size() > 1;
+        overlayView.setBackButtonVisible(visible);
+    }
+
     private void initLayersAndOverlay() {
         Mode initMode = currentMode;
         if (initMode == null) { // first launch
@@ -132,12 +159,12 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         }
         changeModeTo(initMode);
         overlayView.setListener(this);
+        invalidateOverlayBackButton();
     }
 
     private void changeModeTo(Mode mode) {
         currentMode = mode;
         layersView.setMode(currentMode);
-        overlayView.setMode(currentMode);
     }
 
     private void initGyroscope() {

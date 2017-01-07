@@ -41,26 +41,14 @@ public class LayersManager {
     }
 
     public boolean removeLayer(Layer layer) {
-        return replace(layer, null);
-    }
-
-    public boolean replace(Layer what, Layer with) {
-        logState("before replace");
-        if (!backStack.empty() && backStack.search(what) != -1)
-            throw new IllegalArgumentException("You can't remove or replace layer that exists in the back stack");
-        boolean removedFromAll = allLayers.remove(what);
-        boolean removedFromVisible;
-        if (with == null) {
-            removedFromVisible = visibleLayers.remove(what);
-        } else {
-            int replaceIndex = visibleLayers.indexOf(what);
-            removedFromVisible = replaceIndex != -1;
-            if (removedFromVisible)
-                visibleLayers.set(replaceIndex, with);
-        }
+        logState("before removeLayer");
+        if (!backStack.empty() && backStack.search(layer) != -1)
+            throw new IllegalArgumentException("You can't remove layer that exists in the back stack");
+        boolean removedFromAll = allLayers.remove(layer);
+        boolean removedFromVisible = visibleLayers.remove(layer);
         if (removedFromAll != removedFromVisible)
             throw new IllegalArgumentException("Internal error");
-        logState("after replace");
+        logState("after removeLayer");
         return removedFromAll;
     }
 
@@ -69,9 +57,15 @@ public class LayersManager {
         if (backStack.empty())
             return false;
         Layer layer = backStack.pop();
-        boolean result = removeLayer(layer);
+        int indexInVisible = visibleLayers.indexOf(layer);
+        if (indexInVisible == -1)
+            throw new IllegalArgumentException("Internal error");
+        boolean removed = removeLayer(layer);
+        if (!removed)
+            throw new IllegalArgumentException("Internal error");
+        visibleLayers.add(indexInVisible, backStack.peek());
         logState("after popBackStack");
-        return result;
+        return true;
     }
 
     public List<Layer> getVisibleLayers() {

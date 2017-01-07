@@ -7,14 +7,18 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.stedi.gyrshot.R;
-import com.stedi.gyrshot.other.Mode;
 
 public class OverlayView extends FrameLayout implements View.OnClickListener {
-    private Mode mode;
     private Listener listener;
+
+    private View btnBack;
+    private View btnCamera;
+    private View btnSounds;
 
     public interface Listener {
         void onShot();
+
+        void onBackClick();
 
         void onCameraClick();
 
@@ -33,16 +37,20 @@ public class OverlayView extends FrameLayout implements View.OnClickListener {
         super(context, attrs, defStyleAttr);
         LayoutInflater.from(context).inflate(R.layout.overlay_view, this, true);
         setOnClickListener(this);
-        findViewById(R.id.overlay_view_btn_camera).setOnClickListener(settingsClickListener);
-        findViewById(R.id.overlay_view_btn_sounds).setOnClickListener(settingsClickListener);
+        btnBack = findViewById(R.id.overlay_view_btn_back);
+        btnBack.setOnClickListener(settingsClickListener);
+        btnCamera = findViewById(R.id.overlay_view_btn_camera);
+        btnCamera.setOnClickListener(settingsClickListener);
+        btnSounds = findViewById(R.id.overlay_view_btn_sounds);
+        btnSounds.setOnClickListener(settingsClickListener);
     }
 
     public void setListener(Listener listener) {
         this.listener = listener;
     }
 
-    public void setMode(Mode mode) {
-        this.mode = mode;
+    public void setBackButtonVisible(final boolean visible) {
+        btnBack.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -57,10 +65,15 @@ public class OverlayView extends FrameLayout implements View.OnClickListener {
         public void onClick(View v) {
             if (listener == null)
                 return;
-            if (v.getId() == R.id.overlay_view_btn_camera) {
-                listener.onCameraClick();
-            } else if (v.getId() == R.id.overlay_view_btn_sounds) {
-                listener.onSoundsClick();
+            switch (v.getId()) {
+                case R.id.overlay_view_btn_back:
+                    listener.onBackClick();
+                    break;
+                case R.id.overlay_view_btn_camera:
+                    listener.onCameraClick();
+                    break;
+                case R.id.overlay_view_btn_sounds:
+                    listener.onSoundsClick();
             }
         }
     };
