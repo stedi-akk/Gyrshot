@@ -7,8 +7,6 @@ public enum Mode {
     MENU(AppConfig.STATIC_MENU_SIZE[0], AppConfig.STATIC_MENU_SIZE[1]),
     GAME(AppConfig.STATIC_GAME_SIZE[0], AppConfig.STATIC_GAME_SIZE[1]);
 
-    private static Mode current;
-
     private FloatRect zoneRect;
 
     Mode(int zoneWidthDp, int zoneHeightDp) {
@@ -17,14 +15,6 @@ public enum Mode {
 
     public static void overrideZoneSize(Mode mode, float zoneWidthPx, float zoneHeightPx) {
         mode.setZoneSize(zoneWidthPx, zoneHeightPx);
-    }
-
-    public static void setCurrent(Mode mode) {
-        current = mode;
-    }
-
-    public static Mode getCurrent() {
-        return current;
     }
 
     private void setZoneSize(float zoneWidthPx, float zoneHeightPx) {

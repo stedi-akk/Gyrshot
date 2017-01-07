@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.AppConfig;
-import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.TargetsLayer;
@@ -32,7 +31,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     private float lastGyroX, lastGyroY;
 
-    private Layer currentLayer;
+    private static Mode currentMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +95,10 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
                 StartMenuLayer.OnShot onShot = (StartMenuLayer.OnShot) callback;
                 switch (onShot.type) {
                     case START_GAME:
-                        Mode.setCurrent(Mode.GAME);
-                        currentLayer = new TargetsLayer();
-                        layersView.setMode(Mode.getCurrent());
-                        overlayView.setMode(Mode.getCurrent());
-                        layersView.addLayer(currentLayer, true);
+                        currentMode = Mode.GAME;
+                        layersView.setMode(currentMode);
+                        overlayView.setMode(currentMode);
+                        layersView.addLayer(new TargetsLayer(), true);
                         break;
                     case EXIT:
                         finish();
@@ -122,14 +120,13 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     }
 
     private void initLayersAndOverlay() {
-        if (Mode.getCurrent() == null) { // first launch
-            Mode.setCurrent(Mode.MENU);
+        if (currentMode == null) { // first launch
+            currentMode = Mode.MENU;
             layersView.addLayer(new ZoneLayer());
-            currentLayer = new StartMenuLayer();
-            layersView.addLayer(currentLayer, true);
+            layersView.addLayer(new StartMenuLayer(), true);
         }
-        layersView.setMode(Mode.getCurrent());
-        overlayView.setMode(Mode.getCurrent());
+        layersView.setMode(currentMode);
+        overlayView.setMode(currentMode);
         overlayView.setListener(this);
     }
 
