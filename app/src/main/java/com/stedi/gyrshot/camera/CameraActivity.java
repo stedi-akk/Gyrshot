@@ -9,9 +9,13 @@ import android.view.ViewGroup;
 import com.stedi.gyrshot.constants.AppConfig;
 
 public abstract class CameraActivity extends Activity {
-    private boolean hasCamera;
-    private int cameraId = -1;
     private Camera camera;
+    private CameraPreview cameraPreview;
+
+    private boolean hasCamera;
+    private boolean allowCamera = true;
+
+    private int cameraId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,14 +26,27 @@ public abstract class CameraActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        onCameraOpen(initCamera(getPreviewContainer()));
+        tryToOpenCamera();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        releaseCamera();
-        onCameraRelease();
+        tryToReleaseCamera();
+    }
+
+    public void allowCamera() {
+        allowCamera = true;
+        tryToOpenCamera();
+    }
+
+    public void disableCamera() {
+        allowCamera = false;
+        tryToReleaseCamera();
+    }
+
+    public boolean isCameraOpen() {
+        return camera != null;
     }
 
     public void onCameraOpen(boolean result) {
@@ -40,17 +57,33 @@ public abstract class CameraActivity extends Activity {
 
     protected abstract ViewGroup getPreviewContainer();
 
-    private boolean initCamera(ViewGroup previewContainer) {
+    private void tryToOpenCamera() {
+        if (allowCamera && !isCameraOpen())
+            camera = initCamera(getPreviewContainer());
+        onCameraOpen(isCameraOpen());
+    }
+
+    private void tryToReleaseCamera() {
+        if (isCameraOpen()) {
+            cameraPreview.release();
+            camera.release();
+            getPreviewContainer().removeView(cameraPreview);
+            cameraPreview = null;
+            camera = null;
+            onCameraRelease();
+        }
+    }
+
+    private Camera initCamera(ViewGroup previewContainer) {
         if (!AppConfig.ALLOW_CAMERA)
-            return false;
+            return null;
         Camera c = getCameraInstance();
         if (c != null) {
-            CameraPreview cameraPreview = new CameraPreview(this, c);
+            cameraPreview = new CameraPreview(this, c);
             previewContainer.removeAllViews();
             previewContainer.addView(cameraPreview);
-            return true;
         }
-        return false;
+        return c;
     }
 
     private Camera getCameraInstance() {
@@ -71,12 +104,5 @@ public abstract class CameraActivity extends Activity {
             }
         }
         return null;
-    }
-
-    private void releaseCamera() {
-        if (camera != null) {
-            camera.release();
-            camera = null;
-        }
     }
 }
