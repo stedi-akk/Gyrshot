@@ -73,11 +73,17 @@ public abstract class CameraActivity extends Activity {
 
                 if (camera != null) {
                     cameraPreview = new CameraPreview(CameraActivity.this, camera);
+                    cameraPreview.onStartPreviewCallback(new CameraPreview.OnStartPreviewCallback() {
+                        @Override
+                        public void onStartPreview() {
+                            onCameraOpen(true);
+                        }
+                    });
                     getPreviewContainer().removeAllViews();
                     getPreviewContainer().addView(cameraPreview);
+                } else {
+                    onCameraOpen(false);
                 }
-
-                onCameraOpen(camera != null);
             }
         });
     }
@@ -85,6 +91,8 @@ public abstract class CameraActivity extends Activity {
     private void tryToReleaseCamera() {
         if (!hasCamera)
             return;
+
+        onCameraRelease();
 
         if (cameraPreview != null) {
             cameraPreview.release();
@@ -94,6 +102,5 @@ public abstract class CameraActivity extends Activity {
 
         CameraWorker.getInstance().releaseCamera();
         camera = null;
-        onCameraRelease();
     }
 }
