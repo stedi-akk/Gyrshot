@@ -6,16 +6,14 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
-import com.stedi.gyrshot.constants.AppConfig;
-
 public abstract class CameraActivity extends Activity {
     private Camera camera;
+    private int cameraId = -1;
+
     private CameraPreview cameraPreview;
 
     private boolean hasCamera;
     private boolean allowCamera = true;
-
-    private int cameraId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,51 +56,44 @@ public abstract class CameraActivity extends Activity {
     protected abstract ViewGroup getPreviewContainer();
 
     private void tryToOpenCamera() {
-        if (allowCamera && !isCameraOpen())
-            camera = initCamera(getPreviewContainer());
-        onCameraOpen(isCameraOpen());
+        if (!hasCamera || !allowCamera) {
+            onCameraOpen(false);
+            return;
+        }
+
+        if (isCameraOpen()) {
+            onCameraOpen(true);
+        }
+
+        CameraWorker.getInstance().openCamera(cameraId, new CameraWorker.OnOpenCallback() {
+            @Override
+            public void onOpen(CameraWorker.CameraOpenResult result) {
+                camera = result.camera;
+                cameraId = result.cameraId;
+
+                if (camera != null) {
+                    cameraPreview = new CameraPreview(CameraActivity.this, camera);
+                    getPreviewContainer().removeAllViews();
+                    getPreviewContainer().addView(cameraPreview);
+                }
+
+                onCameraOpen(camera != null);
+            }
+        });
     }
 
     private void tryToReleaseCamera() {
-        if (isCameraOpen()) {
+        if (!hasCamera)
+            return;
+
+        if (cameraPreview != null) {
             cameraPreview.release();
-            camera.release();
             getPreviewContainer().removeView(cameraPreview);
             cameraPreview = null;
-            camera = null;
-            onCameraRelease();
         }
-    }
 
-    private Camera initCamera(ViewGroup previewContainer) {
-        if (!AppConfig.ALLOW_CAMERA)
-            return null;
-        Camera c = getCameraInstance();
-        if (c != null) {
-            cameraPreview = new CameraPreview(this, c);
-            previewContainer.removeAllViews();
-            previewContainer.addView(cameraPreview);
-        }
-        return c;
-    }
-
-    private Camera getCameraInstance() {
-        if (hasCamera) {
-            try {
-                if (cameraId != -1)
-                    return Camera.open(cameraId);
-                for (int cameraId = 0; cameraId < Camera.getNumberOfCameras(); cameraId++) {
-                    Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-                    Camera.getCameraInfo(cameraId, cameraInfo);
-                    if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                        this.cameraId = cameraId;
-                        return Camera.open(cameraId);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
+        CameraWorker.getInstance().releaseCamera();
+        camera = null;
+        onCameraRelease();
     }
 }
