@@ -11,12 +11,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private SurfaceHolder holder;
     private Camera camera;
 
-    private OnStartPreviewCallback startPreviewCallback;
-
-    public interface OnStartPreviewCallback {
-        void onStartPreview();
-    }
-
     public CameraPreview(Context context, Camera camera) {
         super(context);
         this.camera = camera;
@@ -24,14 +18,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         holder.addCallback(this);
     }
 
-    public void onStartPreviewCallback(OnStartPreviewCallback callback) {
-        this.startPreviewCallback = callback;
-    }
-
     public void release() {
         camera.setPreviewCallback(null);
         holder.removeCallback(this);
-        startPreviewCallback = null;
     }
 
     @Override
@@ -39,12 +28,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             camera.setPreviewDisplay(holder);
             camera.startPreview();
-            if (startPreviewCallback != null)
-                startPreviewCallback.onStartPreview();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        startPreviewCallback = null;
     }
 
     @Override

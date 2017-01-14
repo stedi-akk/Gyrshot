@@ -72,13 +72,19 @@ public abstract class CameraActivity extends Activity {
                 cameraId = result.cameraId;
 
                 if (camera != null) {
-                    cameraPreview = new CameraPreview(CameraActivity.this, camera);
-                    cameraPreview.onStartPreviewCallback(new CameraPreview.OnStartPreviewCallback() {
+                    camera.setPreviewCallback(new Camera.PreviewCallback() {
                         @Override
-                        public void onStartPreview() {
-                            onCameraOpen(true);
+                        public void onPreviewFrame(byte[] d, Camera c) {
+                            camera.setPreviewCallback(null);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onCameraOpen(true);
+                                }
+                            });
                         }
                     });
+                    cameraPreview = new CameraPreview(CameraActivity.this, camera);
                     getPreviewContainer().removeAllViews();
                     getPreviewContainer().addView(cameraPreview);
                 } else {
