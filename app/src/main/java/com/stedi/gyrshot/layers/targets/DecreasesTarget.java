@@ -10,17 +10,19 @@ import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
 
 public class DecreasesTarget extends Target {
-    private static final float INITIAL_RADIUS = Games.DECREASES_TARGET_SIZE;
-    private static final long DECREASE_TIME = Games.DECREASES_TARGET_LIFE_TIME;
-    private static final float RADIUS_STEP = INITIAL_RADIUS / DECREASE_TIME;
+    private static final float RADIUS_STEP = Games.DECREASES_TARGET_SIZE / Games.DECREASES_TARGET_LIFE_TIME;
 
     public class OnShot implements ShotCallback {
     }
 
     private final Paint paint = PaintFactory.create(Color.RED);
 
-    private float radius;
-    private long firstDrawTime;
+    private float targetRadius;
+
+    private long startTime;
+    private long elapsedTime;
+
+    private boolean onPauseCalled;
 
     public DecreasesTarget(float x, float y) {
         super(x, y);
@@ -33,23 +35,30 @@ public class DecreasesTarget extends Target {
 
     @Override
     public float getRadius() {
-        return radius;
+        return targetRadius;
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        if (firstDrawTime != 0) {
-            long timeDiff = System.currentTimeMillis() - firstDrawTime;
-            if (timeDiff >= DECREASE_TIME)
-                return false;
-            radius = INITIAL_RADIUS - (RADIUS_STEP * timeDiff);
-            canvas.drawCircle(x, y, radius, paint);
-            return true;
-        } else {
-            radius = INITIAL_RADIUS;
-            canvas.drawCircle(x, y, radius, paint);
-            firstDrawTime = System.currentTimeMillis();
-            return true;
+    protected void onPauseTarget() {
+        onPauseCalled = true;
+    }
+
+    @Override
+    protected boolean onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+        if (startTime == 0)
+            startTime = System.currentTimeMillis();
+
+        if (onPauseCalled) {
+            startTime = System.currentTimeMillis() - elapsedTime;
+            onPauseCalled = false;
         }
+
+        elapsedTime = System.currentTimeMillis() - startTime;
+        if (elapsedTime >= Games.DECREASES_TARGET_LIFE_TIME)
+            return false;
+
+        targetRadius = Games.DECREASES_TARGET_SIZE - (RADIUS_STEP * elapsedTime);
+        canvas.drawCircle(getX(), getY(), targetRadius, paint);
+        return true;
     }
 }

@@ -13,12 +13,12 @@ public final class AppConfig {
     public static final int LAYERS_VIEW_MAX_FPS = 40; // 0 - turn off; reduces FPS even more !
 
     // zone size
-    public static final boolean MODE_ZONE_SIZE_DEPENDS_ON_SCREEN = true;
-    public static final boolean ATTACH_ZONE_RECT_TO_SCREEN_EDGES = true;
+    public static final boolean MODE_ZONE_SIZE_DEPENDS_ON_SCREEN = false;
+    public static final boolean ATTACH_ZONE_RECT_TO_SCREEN_EDGES = false;
     public static final float[] MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN = new float[]{2.6f, 1.8f};
     public static final float[] GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN = new float[]{4f, 4f};
     public static final int[] STATIC_MENU_SIZE = new int[]{500, 500};
-    public static final int[] STATIC_GAME_SIZE = new int[]{1000, 1000};
+    public static final int[] STATIC_GAME_SIZE = new int[]{700, 700};
 
     // debug info
     public static final boolean SHOW_DEBUG_LAYER = true;

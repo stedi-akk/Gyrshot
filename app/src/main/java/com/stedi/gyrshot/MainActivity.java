@@ -55,6 +55,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     @Override
     protected void onResume() {
         super.onResume();
+        App.onResume();
         hideNavigationBar();
         sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
     }
@@ -62,6 +63,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     @Override
     protected void onPause() {
         super.onPause();
+        App.onPause();
         sensorManager.unregisterListener(this);
     }
 

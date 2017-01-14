@@ -15,6 +15,8 @@ public class App extends Application {
 
     private Random random;
 
+    private boolean inOnResume;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -37,6 +39,18 @@ public class App extends Application {
         Mode.overrideZoneSize(Mode.GAME,
                 zoneSizeByScreen * AppConfig.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[0],
                 zoneSizeByScreen * AppConfig.GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN[1]);
+    }
+
+    public static void onResume() {
+        instance.inOnResume = true;
+    }
+
+    public static void onPause() {
+        instance.inOnResume = false;
+    }
+
+    public static boolean inOnResume() {
+        return instance.inOnResume;
     }
 
     public static Resources getRes() {
