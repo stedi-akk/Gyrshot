@@ -55,16 +55,18 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     @Override
     protected void onResume() {
         super.onResume();
-        App.onResume();
         hideNavigationBar();
+        App.onResume();
+        layersView.onResume();
         sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        App.onPause();
         sensorManager.unregisterListener(this);
+        layersView.onPause();
+        App.onPause();
     }
 
     @Override

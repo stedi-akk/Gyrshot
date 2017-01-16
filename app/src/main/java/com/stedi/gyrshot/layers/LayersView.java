@@ -79,6 +79,16 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         return layersManager.getBackStack();
     }
 
+    public void onResume() {
+        for (Layer layer : layersManager.getVisibleLayers())
+            layer.onResume();
+    }
+
+    public void onPause() {
+        for (Layer layer : layersManager.getVisibleLayers())
+            layer.onPause();
+    }
+
     public void setTransparent(boolean value) {
         isTransparent = value;
     }

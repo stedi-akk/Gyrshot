@@ -19,6 +19,18 @@ public class GameLayer extends Layer {
     }
 
     @Override
+    public void onResume() {
+        for (Target target : targets)
+            target.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        for (Target target : targets)
+            target.onPause();
+    }
+
+    @Override
     public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (targets == null) {
             targets = new ArrayList<>();

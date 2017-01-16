@@ -11,7 +11,7 @@ public abstract class Target extends Layer {
     private float x;
     private float y;
 
-    private boolean shouldNotifyOnPause = true;
+    private boolean inOnResume = App.inOnResume();
 
     protected Target(float x, float y) {
         this.x = x;
@@ -35,25 +35,26 @@ public abstract class Target extends Layer {
     }
 
     @Override
+    public void onResume() {
+        inOnResume = true;
+    }
+
+    @Override
+    public void onPause() {
+        inOnResume = false;
+        onPauseTarget();
+    }
+
+    @Override
     public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        if (!App.inOnResume()) {
-            if (shouldNotifyOnPause) {
-                App.log(this, "onPauseTarget");
-                onPauseTarget();
-                shouldNotifyOnPause = false;
-            }
-            return true;
-        } else {
-            shouldNotifyOnPause = true;
+        if (inOnResume)
             return onDrawTarget(canvas, zoneRect, actualRect);
-        }
+        return true;
     }
 
     @Override
     public ShotCallback onShot(float shotX, float shotY) {
-        if (!App.inOnResume())
-            return null;
-        if (shotX >= getX() - getRadius() && shotX <= getX() + getRadius()
+        if (inOnResume && shotX >= getX() - getRadius() && shotX <= getX() + getRadius()
                 && shotY >= getY() - getRadius() && shotY <= getY() + getRadius())
             return getShotCallback();
         return null;
