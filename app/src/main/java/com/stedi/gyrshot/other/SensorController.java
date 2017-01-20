@@ -44,11 +44,14 @@ public class SensorController implements SensorEventListener {
     }
 
     public void stopListening() {
+        sensorManager.unregisterListener(this);
         this.listener = null;
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (listener == null)
+            return;
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             if (Math.abs(event.values[0] - lastGyroX) > AppConfig.GYROSCOPE_SENSOR_ACCURACY
                     || Math.abs(event.values[1] - lastGyroY) > AppConfig.GYROSCOPE_SENSOR_ACCURACY) {
