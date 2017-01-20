@@ -1,9 +1,5 @@
 package com.stedi.gyrshot;
 
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -11,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
-import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
@@ -21,21 +16,15 @@ import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
 import com.stedi.gyrshot.layers.targets.DecreasesTarget;
 import com.stedi.gyrshot.other.Mode;
+import com.stedi.gyrshot.other.SensorController;
 import com.stedi.gyrshot.overlay.OverlayView;
 
-public class MainActivity extends CameraActivity implements SensorEventListener, OverlayView.Listener {
+public class MainActivity extends CameraActivity implements SensorController.SensorListener, OverlayView.Listener {
+    private SensorController sensorController;
+
     private ViewGroup cameraPreviewContainer;
     private LayersView layersView;
     private OverlayView overlayView;
-
-    private SensorManager sensorManager;
-    private Sensor gyroSensor, rotationSensor;
-
-    private float[] rotationMatrix;
-    private float[] rotationMatrixTemp;
-    private float[] rotationMatrixValues;
-
-    private float lastGyroX, lastGyroY, lastRotationZ;
 
     private static Mode currentMode;
 
@@ -43,10 +32,12 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
         cameraPreviewContainer = (ViewGroup) findViewById(R.id.main_activity_camera_preview_container);
         layersView = (LayersView) findViewById(R.id.main_activity_layers_view);
         overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
-        initSensors();
+
+        sensorController = new SensorController(this);
         initLayersAndOverlay();
     }
 
@@ -62,22 +53,13 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         hideNavigationBar();
         App.onResume();
         layersView.onResume();
-
-        if (gyroSensor != null)
-            sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
-        else
-            Toast.makeText(this, "Gyroscope sensor not found", Toast.LENGTH_SHORT).show();
-
-        if (rotationSensor != null)
-            sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
-        else
-            Toast.makeText(this, "Rotation sensor not found", Toast.LENGTH_SHORT).show();
+        sensorController.startListening(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+        sensorController.stopListening();
         layersView.onPause();
         App.onPause();
     }
@@ -98,32 +80,13 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            if (Math.abs(event.values[0] - lastGyroX) > AppConfig.GYROSCOPE_SENSOR_ACCURACY
-                    || Math.abs(event.values[1] - lastGyroY) > AppConfig.GYROSCOPE_SENSOR_ACCURACY) {
-                lastGyroX = event.values[0];
-                lastGyroY = event.values[1];
-                layersView.updateFromGyroscope((float) Math.toDegrees(lastGyroX),
-                        (float) -Math.toDegrees(lastGyroY));
-            }
-        } else if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            if (Math.abs(event.values[2] - lastRotationZ) > AppConfig.ROTATION_SENSOR_ACCURACY) {
-                lastRotationZ = event.values[2];
+    public void fromGyroscope(float xDegree, float yDegree) {
+        layersView.updateFromGyroscope(xDegree, yDegree);
+    }
 
-                SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
-
-                SensorManager.remapCoordinateSystem(rotationMatrix,
-                        SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                        rotationMatrixTemp);
-
-                SensorManager.getOrientation(rotationMatrixTemp, rotationMatrixValues);
-
-                float rotationZ = (float) -Math.toDegrees(rotationMatrixValues[2]) - 90;
-
-                layersView.updateFromRotationVector(rotationZ);
-            }
-        }
+    @Override
+    public void fromRotationVector(float zDegree) {
+        layersView.updateFromRotationVector(zDegree);
     }
 
     @Override
@@ -205,26 +168,11 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         layersView.setMode(currentMode);
     }
 
-    private void initSensors() {
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        if (AppConfig.ALLOW_ROTATION_SENSOR) {
-            rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-            rotationMatrix = new float[16];
-            rotationMatrixTemp = new float[16];
-            rotationMatrixValues = new float[16];
-        }
-    }
-
     private void hideNavigationBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 }
