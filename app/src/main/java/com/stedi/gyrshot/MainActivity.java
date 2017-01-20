@@ -29,9 +29,13 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
     private OverlayView overlayView;
 
     private SensorManager sensorManager;
-    private Sensor gyroSensor;
+    private Sensor gyroSensor, rotationSensor;
 
-    private float lastGyroX, lastGyroY;
+    private float[] rotationMatrix;
+    private float[] rotationMatrixTemp;
+    private float[] rotationMatrixValues;
+
+    private float lastGyroX, lastGyroY, lastRotationZ;
 
     private static Mode currentMode;
 
@@ -42,7 +46,7 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         cameraPreviewContainer = (ViewGroup) findViewById(R.id.main_activity_camera_preview_container);
         layersView = (LayersView) findViewById(R.id.main_activity_layers_view);
         overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
-        initGyroscope();
+        initSensors();
         initLayersAndOverlay();
     }
 
@@ -58,7 +62,16 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         hideNavigationBar();
         App.onResume();
         layersView.onResume();
-        sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+
+        if (gyroSensor != null)
+            sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+        else
+            Toast.makeText(this, "Gyroscope sensor not found", Toast.LENGTH_SHORT).show();
+
+        if (rotationSensor != null)
+            sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
+        else
+            Toast.makeText(this, "Rotation sensor not found", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -86,13 +99,30 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float gyroX = (float) Math.toDegrees(event.values[0]);
-        float gyroY = (float) -Math.toDegrees(event.values[1]);
-        if (Math.abs(gyroX - lastGyroX) > AppConfig.GYROSCOPE_ACCURACY
-                || Math.abs(gyroY - lastGyroY) > AppConfig.GYROSCOPE_ACCURACY) {
-            lastGyroX = gyroX;
-            lastGyroY = gyroY;
-            layersView.updateFromGyroscope(lastGyroX, lastGyroY);
+        if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            if (Math.abs(event.values[0] - lastGyroX) > AppConfig.GYROSCOPE_SENSOR_ACCURACY
+                    || Math.abs(event.values[1] - lastGyroY) > AppConfig.GYROSCOPE_SENSOR_ACCURACY) {
+                lastGyroX = event.values[0];
+                lastGyroY = event.values[1];
+                layersView.updateFromGyroscope((float) Math.toDegrees(lastGyroX),
+                        (float) -Math.toDegrees(lastGyroY));
+            }
+        } else if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            if (Math.abs(event.values[2] - lastRotationZ) > AppConfig.ROTATION_SENSOR_ACCURACY) {
+                lastRotationZ = event.values[2];
+
+                SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+
+                SensorManager.remapCoordinateSystem(rotationMatrix,
+                        SensorManager.AXIS_X, SensorManager.AXIS_Z,
+                        rotationMatrixTemp);
+
+                SensorManager.getOrientation(rotationMatrixTemp, rotationMatrixValues);
+
+                float rotationZ = (float) -Math.toDegrees(rotationMatrixValues[2]) - 90;
+
+                layersView.updateFromRotationVector(rotationZ);
+            }
         }
     }
 
@@ -175,9 +205,15 @@ public class MainActivity extends CameraActivity implements SensorEventListener,
         layersView.setMode(currentMode);
     }
 
-    private void initGyroscope() {
+    private void initSensors() {
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        if (AppConfig.ALLOW_ROTATION_SENSOR) {
+            rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+            rotationMatrix = new float[16];
+            rotationMatrixTemp = new float[16];
+            rotationMatrixValues = new float[16];
+        }
     }
 
     private void hideNavigationBar() {

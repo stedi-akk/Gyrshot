@@ -25,7 +25,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private FloatRect actualRect;
 
     private float screenHalfWidth, screenHalfHeight;
-    private float gyroXOffset, gyroYOffset;
+    private float gyroXOffset, gyroYOffset, rotationZ;
     private float shotX, shotY;
 
     private boolean isTransparent;
@@ -106,6 +106,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             gyroYOffset = actualRect.top;
         else if (gyroYOffset > actualRect.bottom)
             gyroYOffset = actualRect.bottom;
+    }
+
+    public void updateFromRotationVector(float rotationZ) {
+        this.rotationZ = rotationZ;
     }
 
     public ShotCallback onShot() {
@@ -204,6 +208,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     synchronized (surfaceHolder) {
                         // translate canvas to the center, and move it by gyroscope offset values
                         canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
+                        if (AppConfig.ALLOW_ROTATION_SENSOR)
+                            canvas.rotate(rotationZ);
 
                         // clear last frame
                         if (isTransparent)
