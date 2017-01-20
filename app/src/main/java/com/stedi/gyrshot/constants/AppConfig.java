@@ -8,11 +8,10 @@ import android.graphics.Paint;
  */
 public final class AppConfig {
     // core
-    public static final float GYROSCOPE_SENSOR_ACCURACY = 0.02f;
-    public static final float ROTATION_SENSOR_ACCURACY = 0.005f;
     public static final boolean ALLOW_CAMERA = true;
     public static final boolean ALLOW_ROTATION_SENSOR = true; // experimental
-    public static final int LAYERS_VIEW_MAX_FPS = 40; // 0 - turn off; reduces FPS even more !
+    public static final float GYROSCOPE_SENSOR_ACCURACY = 0.02f;
+    public static final float ROTATION_SENSOR_ACCURACY = 0.005f;
 
     // zone size
     public static final boolean MODE_ZONE_SIZE_DEPENDS_ON_SCREEN = false;
@@ -24,7 +23,7 @@ public final class AppConfig {
 
     // debug info
     public static final boolean SHOW_DEBUG_LAYER = true;
-    public static final boolean DEBUG_LAYER_SHOW_DEBUG_TEXT = true; // fps, gyroscope values, etc
+    public static final boolean DEBUG_LAYER_SHOW_DEBUG_TEXT = true; // sensor values, etc
     public static final boolean DEBUG_LAYER_SHOW_ZONE_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_ACTUAL_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_LAST_SHOT = true;

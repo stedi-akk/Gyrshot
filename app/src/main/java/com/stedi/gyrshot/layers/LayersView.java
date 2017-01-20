@@ -30,8 +30,6 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private boolean isTransparent;
 
-    private int fps;
-
     public LayersView(Context context) {
         this(context, null);
     }
@@ -158,15 +156,18 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void drawDebugLayer(Canvas canvas) {
+        if (debugLayer == null)
+            debugLayer = new DebugLayer();
+
         debugLayer.showZoneRect(AppConfig.DEBUG_LAYER_SHOW_ZONE_RECT);
         debugLayer.showActualRect(AppConfig.DEBUG_LAYER_SHOW_ACTUAL_RECT);
 
         if (AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT) {
             debugLayer.clearDebugText();
             debugLayer.prepareDebugText(gyroXOffset, gyroYOffset);
-            debugLayer.addDebugText("fps: " + String.valueOf(fps));
             debugLayer.addDebugText("gyroXOffset: " + String.valueOf(gyroXOffset));
             debugLayer.addDebugText("gyroYOffset: " + String.valueOf(gyroYOffset));
+            debugLayer.addDebugText("rotationZ: " + String.valueOf(rotationZ));
         }
 
         if (AppConfig.DEBUG_LAYER_SHOW_LAST_SHOT)
@@ -186,28 +187,16 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void run() {
-            long sleepPerFrame = 0;
-            if (AppConfig.LAYERS_VIEW_MAX_FPS > 0)
-                sleepPerFrame = 1000 / AppConfig.LAYERS_VIEW_MAX_FPS;
-
-            if (AppConfig.SHOW_DEBUG_LAYER && debugLayer == null)
-                debugLayer = new DebugLayer();
-
-            boolean countFps = AppConfig.SHOW_DEBUG_LAYER && AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT;
-            long lastFrameTime = 0;
-            int framesCount = 0;
-
             while (run) {
                 Canvas canvas = null;
                 try {
-                    if (sleepPerFrame > 0)
-                        sleep(sleepPerFrame);
-
                     canvas = surfaceHolder.lockCanvas();
 
                     synchronized (surfaceHolder) {
                         // translate canvas to the center, and move it by gyroscope offset values
                         canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
+
+                        // experimental z rotation
                         if (AppConfig.ALLOW_ROTATION_SENSOR)
                             canvas.rotate(rotationZ);
 
@@ -223,17 +212,6 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                         // draw debug info with special layer
                         if (AppConfig.SHOW_DEBUG_LAYER)
                             drawDebugLayer(canvas);
-
-                        // fps count
-                        if (countFps) {
-                            framesCount++;
-                            long frameTime = System.currentTimeMillis();
-                            if (frameTime - lastFrameTime >= 1000) {
-                                lastFrameTime = frameTime;
-                                fps = framesCount;
-                                framesCount = 0;
-                            }
-                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
