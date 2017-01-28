@@ -37,10 +37,20 @@ public class SensorController implements SensorEventListener {
         }
     }
 
+    public boolean isGyroscopeExist() {
+        return gyroSensor != null;
+    }
+
+    public boolean isRotationVectorExist() {
+        return rotationSensor != null;
+    }
+
     public void startListening(SensorListener listener) {
         this.listener = listener;
-        sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
-        sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (isGyroscopeExist())
+            sensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (isRotationVectorExist())
+            sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
     }
 
     public void stopListening() {
@@ -52,6 +62,7 @@ public class SensorController implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         if (listener == null)
             return;
+
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             if (Math.abs(event.values[0] - lastGyroX) > AppConfig.GYROSCOPE_SENSOR_ACCURACY
                     || Math.abs(event.values[1] - lastGyroY) > AppConfig.GYROSCOPE_SENSOR_ACCURACY) {

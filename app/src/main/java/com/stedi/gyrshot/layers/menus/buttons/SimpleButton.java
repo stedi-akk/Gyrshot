@@ -49,11 +49,10 @@ public class SimpleButton extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+    public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         canvas.drawRect(drawRect.left, drawRect.top, drawRect.right, drawRect.bottom, fillPaint);
         canvas.drawRect(drawRect.left, drawRect.top, drawRect.right, drawRect.bottom, borderPaint);
         canvas.drawText(text, 0, text.length(), xOffset, yOffset, textPaint);
-        return true;
     }
 
     @Override

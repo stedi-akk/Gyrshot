@@ -31,7 +31,7 @@ public class GameLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+    public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (targets == null) {
             targets = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
@@ -44,11 +44,11 @@ public class GameLayer extends Layer {
 
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
-            if (target == null || !target.onDraw(canvas, zoneRect, actualRect))
+            if (target != null && target.isAlive())
+                target.onDraw(canvas, zoneRect, actualRect);
+            else
                 targets.set(i, TargetsFactory.create(type, actualRect));
         }
-
-        return true;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class DebugLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+    public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (debugText != null) {
             canvas.save();
             canvas.translate(-debugTextXOffset, -debugTextYOffset); // ignoring offset from gyroscope
@@ -108,7 +108,5 @@ public class DebugLayer extends Layer {
             Paint paint = getLastShotPaint();
             canvas.drawCircle(lastShotX, lastShotY, 10, paint);
         }
-
-        return true;
     }
 }

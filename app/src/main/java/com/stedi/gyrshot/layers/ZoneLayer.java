@@ -18,8 +18,7 @@ public class ZoneLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+    public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         canvas.drawRect(zoneRect.left, zoneRect.top, zoneRect.right, zoneRect.bottom, paint);
-        return true;
     }
 }

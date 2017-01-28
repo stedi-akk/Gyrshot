@@ -22,15 +22,17 @@ public abstract class Target extends Layer {
 
     public abstract float getRadius();
 
+    public abstract boolean isAlive();
+
     protected abstract void onPauseTarget();
 
-    protected abstract boolean onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect);
+    protected abstract void onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect);
 
-    public float getX() {
+    protected float getX() {
         return x;
     }
 
-    public float getY() {
+    protected float getY() {
         return y;
     }
 
@@ -46,15 +48,15 @@ public abstract class Target extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        if (inOnResume)
-            return onDrawTarget(canvas, zoneRect, actualRect);
-        return true;
+    public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+        if (inOnResume && isAlive())
+            onDrawTarget(canvas, zoneRect, actualRect);
     }
 
     @Override
     public ShotCallback onShot(float shotX, float shotY) {
-        if (inOnResume && shotX >= getX() - getRadius() && shotX <= getX() + getRadius()
+        if (inOnResume && isAlive()
+                && shotX >= getX() - getRadius() && shotX <= getX() + getRadius()
                 && shotY >= getY() - getRadius() && shotY <= getY() + getRadius())
             return getShotCallback();
         return null;

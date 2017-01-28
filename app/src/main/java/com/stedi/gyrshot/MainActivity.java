@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
+import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
@@ -45,6 +46,15 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
     public void onBackPressed() {
         if (layersView.getBackStack().size() <= 1)
             super.onBackPressed();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (!sensorController.isGyroscopeExist())
+            Toast.makeText(this, "Gyroscope sensor not found", Toast.LENGTH_LONG).show();
+        if (AppConfig.ALLOW_ROTATION_SENSOR && !sensorController.isRotationVectorExist())
+            Toast.makeText(this, "Rotation sensor not found", Toast.LENGTH_LONG).show();
     }
 
     @Override

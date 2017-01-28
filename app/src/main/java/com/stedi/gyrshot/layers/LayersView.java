@@ -191,25 +191,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                 Canvas canvas = null;
                 try {
                     canvas = surfaceHolder.lockCanvas();
-
                     synchronized (surfaceHolder) {
-                        // translate canvas to the center, and move it by gyroscope offset values
-                        canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
-
-                        // experimental z rotation
-                        if (AppConfig.ALLOW_ROTATION_SENSOR)
-                            canvas.rotate(rotationZ);
-
-                        // clear last frame
-                        if (isTransparent)
-                            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                        else
-                            canvas.drawColor(AppConfig.LAYERS_VIEW_BACKGROUND_COLOR);
-
-                        // main draw logic
+                        moveCanvasBasedOnSensorValues(canvas);
+                        clearLastFrame(canvas);
                         drawLayers(canvas);
-
-                        // draw debug info with special layer
                         if (AppConfig.SHOW_DEBUG_LAYER)
                             drawDebugLayer(canvas);
                     }
@@ -225,6 +210,19 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 }
             }
+        }
+
+        private void moveCanvasBasedOnSensorValues(Canvas canvas) {
+            canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
+            if (AppConfig.ALLOW_ROTATION_SENSOR)
+                canvas.rotate(rotationZ);
+        }
+
+        private void clearLastFrame(Canvas canvas) {
+            if (isTransparent)
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+            else
+                canvas.drawColor(AppConfig.LAYERS_VIEW_BACKGROUND_COLOR);
         }
 
         private void stopThread() {

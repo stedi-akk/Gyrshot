@@ -63,6 +63,7 @@ public abstract class CameraActivity extends Activity {
 
         if (isCameraOpen()) {
             onCameraOpen(true);
+            return;
         }
 
         CameraWorker.getInstance().openCamera(cameraId, new CameraWorker.OnOpenCallback() {

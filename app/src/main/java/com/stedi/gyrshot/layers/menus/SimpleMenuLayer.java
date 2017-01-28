@@ -26,9 +26,8 @@ public abstract class SimpleMenuLayer extends Layer {
     }
 
     @Override
-    public boolean onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+    public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         for (SimpleButton button : buttons)
             button.onDraw(canvas, zoneRect, actualRect);
-        return true;
     }
 }

@@ -22,6 +22,7 @@ public class DecreasesTarget extends Target {
     private long startTime;
     private long elapsedTime;
 
+    private boolean isAlive = true;
     private boolean onPauseCalled;
 
     public DecreasesTarget(float x, float y) {
@@ -39,12 +40,17 @@ public class DecreasesTarget extends Target {
     }
 
     @Override
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    @Override
     protected void onPauseTarget() {
         onPauseCalled = true;
     }
 
     @Override
-    protected boolean onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
+    protected void onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (startTime == 0)
             startTime = System.currentTimeMillis();
 
@@ -55,10 +61,9 @@ public class DecreasesTarget extends Target {
 
         elapsedTime = System.currentTimeMillis() - startTime;
         if (elapsedTime >= Games.DECREASES_TARGET_LIFE_TIME)
-            return false;
+            isAlive = false;
 
         targetRadius = Games.DECREASES_TARGET_SIZE - (RADIUS_STEP * elapsedTime);
         canvas.drawCircle(getX(), getY(), targetRadius, paint);
-        return true;
     }
 }

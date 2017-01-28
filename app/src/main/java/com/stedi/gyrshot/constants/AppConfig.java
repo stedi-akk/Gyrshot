@@ -9,7 +9,7 @@ import android.graphics.Paint;
 public final class AppConfig {
     // core
     public static final boolean ALLOW_CAMERA = true;
-    public static final boolean ALLOW_ROTATION_SENSOR = true; // experimental
+    public static final boolean ALLOW_ROTATION_SENSOR = false; // experimental
     public static final float GYROSCOPE_SENSOR_ACCURACY = 0.02f;
     public static final float ROTATION_SENSOR_ACCURACY = 0.005f;
 
