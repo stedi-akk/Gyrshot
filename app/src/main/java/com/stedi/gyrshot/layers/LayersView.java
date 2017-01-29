@@ -116,15 +116,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         gyroXOffset += gyroX;
         gyroYOffset += gyroY;
 
-        if (gyroXOffset < actualRect.left)
-            gyroXOffset = actualRect.left;
-        else if (gyroXOffset > actualRect.right)
-            gyroXOffset = actualRect.right;
-
-        if (gyroYOffset < actualRect.top)
-            gyroYOffset = actualRect.top;
-        else if (gyroYOffset > actualRect.bottom)
-            gyroYOffset = actualRect.bottom;
+        gyroXOffset = actualRect.forceInLeftRight(gyroXOffset);
+        gyroYOffset = actualRect.forceInTopBottom(gyroYOffset);
 
         notifyNewGyroValues();
     }

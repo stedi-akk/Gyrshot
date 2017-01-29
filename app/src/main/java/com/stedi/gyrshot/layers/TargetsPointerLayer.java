@@ -17,6 +17,8 @@ public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListe
 
     private float gyroXOffset, gyroYOffset;
 
+    private FloatRect drawRect;
+
     public TargetsPointerLayer() {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(10);
@@ -30,9 +32,18 @@ public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListe
     @Override
     public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         if (gameTargets != null) {
+            if (drawRect == null) {
+                drawRect = new FloatRect(canvas.getWidth(), canvas.getHeight());
+            }
+
             for (Target target : gameTargets) {
+
                 float realX = target.getX() + gyroXOffset;
                 float realY = target.getY() + gyroYOffset;
+
+                realX = drawRect.forceInLeftRight(realX);
+                realY = drawRect.forceInTopBottom(realY);
+
                 canvas.drawCircle(realX - target.getRadius(), realY, 10, paint);
                 canvas.drawCircle(realX, realY - target.getRadius(), 10, paint);
                 canvas.drawCircle(realX + target.getRadius(), realY, 10, paint);

@@ -35,4 +35,20 @@ public class FloatRect {
     public float getHeight() {
         return -top + bottom;
     }
+
+    public float forceInLeftRight(float x) {
+        if (x < left)
+            return left;
+        if (x > right)
+            return right;
+        return x;
+    }
+
+    public float forceInTopBottom(float y) {
+        if (y < top)
+            return top;
+        if (y > bottom)
+            return bottom;
+        return y;
+    }
 }
