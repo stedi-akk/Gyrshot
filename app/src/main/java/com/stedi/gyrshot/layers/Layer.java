@@ -16,4 +16,8 @@ public abstract class Layer {
     public ShotCallback onShot(float shotX, float shotY) {
         return null;
     }
+
+    public boolean isStatic() {
+        return false;
+    }
 }

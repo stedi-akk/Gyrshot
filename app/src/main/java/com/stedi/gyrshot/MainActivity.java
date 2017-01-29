@@ -12,6 +12,7 @@ import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
+import com.stedi.gyrshot.layers.TargetsPointerLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
 import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
@@ -28,6 +29,9 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
     private OverlayView overlayView;
 
     private static Mode currentMode;
+
+    private GameLayer gameLayer;
+    private TargetsPointerLayer pointerLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +128,12 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
             if (callback instanceof PickGameMenuLayer.OnShot) {
                 PickGameMenuLayer.OnShot onShot = (PickGameMenuLayer.OnShot) callback;
                 changeModeTo(Mode.GAME);
-                layersView.addLayer(new GameLayer(onShot.type), true);
+                gameLayer = new GameLayer(onShot.type);
+                pointerLayer = new TargetsPointerLayer();
+                gameLayer.addListener(pointerLayer);
+                layersView.addLayer(gameLayer, true);
+                layersView.addOnSensorValuesListener(pointerLayer);
+                layersView.addLayer(pointerLayer);
                 invalidateOverlayBackButton();
             }
         }
@@ -132,6 +141,14 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
 
     @Override
     public void onBackClick() {
+        if (layersView.getBackStack().peek() == gameLayer) {
+            gameLayer.removeListener(pointerLayer);
+            layersView.removeOnSensorValuesListener(pointerLayer);
+            layersView.removeLayer(pointerLayer);
+            pointerLayer = null;
+            gameLayer = null;
+        }
+
         boolean result = layersView.popBackStack();
         invalidateOverlayBackButton();
         if (result) {

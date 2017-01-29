@@ -13,6 +13,8 @@ import com.stedi.gyrshot.constants.AppConfig;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.Mode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
@@ -29,6 +31,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private float shotX, shotY;
 
     private boolean isTransparent;
+
+    private List<OnSensorValues> onSensorListeners;
+
+    public interface OnSensorValues {
+        void onGyroXYOffset(float gyroXOffset, float gyroYOffset);
+
+        void onRotationZ(float rotationZ);
+    }
 
     public LayersView(Context context) {
         this(context, null);
@@ -91,6 +101,17 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         isTransparent = value;
     }
 
+    public void addOnSensorValuesListener(OnSensorValues listener) {
+        if (onSensorListeners == null)
+            onSensorListeners = new ArrayList<>();
+        onSensorListeners.add(listener);
+    }
+
+    public void removeOnSensorValuesListener(OnSensorValues listener) {
+        if (onSensorListeners != null)
+            onSensorListeners.remove(listener);
+    }
+
     public void updateFromGyroscope(float gyroX, float gyroY) {
         gyroXOffset += gyroX;
         gyroYOffset += gyroY;
@@ -104,10 +125,13 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             gyroYOffset = actualRect.top;
         else if (gyroYOffset > actualRect.bottom)
             gyroYOffset = actualRect.bottom;
+
+        notifyNewGyroValues();
     }
 
     public void updateFromRotationVector(float rotationZ) {
         this.rotationZ = rotationZ;
+        notifyNewRotationValue();
     }
 
     public ShotCallback onShot() {
@@ -119,6 +143,31 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                 return callback;
         }
         return null;
+    }
+
+    private void calculateActualRect() {
+        if (AppConfig.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
+            FloatRect rect = mode.getZoneRect();
+            float leftEdge = rect.left + screenHalfWidth;
+            float rightEdge = rect.right - screenHalfWidth;
+            float topEdge = rect.top + screenHalfHeight;
+            float bottomEdge = rect.bottom - screenHalfHeight;
+            actualRect = new FloatRect(leftEdge, topEdge, rightEdge, bottomEdge);
+        } else {
+            actualRect = mode.getZoneRect();
+        }
+    }
+
+    private void notifyNewGyroValues() {
+        if (onSensorListeners != null)
+            for (OnSensorValues listener : onSensorListeners)
+                listener.onGyroXYOffset(gyroXOffset, gyroYOffset);
+    }
+
+    private void notifyNewRotationValue() {
+        if (onSensorListeners != null)
+            for (OnSensorValues listener : onSensorListeners)
+                listener.onRotationZ(rotationZ);
     }
 
     @Override
@@ -137,45 +186,6 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         thread = null;
     }
 
-    private void calculateActualRect() {
-        if (AppConfig.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
-            FloatRect rect = mode.getZoneRect();
-            float leftEdge = rect.left + screenHalfWidth;
-            float rightEdge = rect.right - screenHalfWidth;
-            float topEdge = rect.top + screenHalfHeight;
-            float bottomEdge = rect.bottom - screenHalfHeight;
-            actualRect = new FloatRect(leftEdge, topEdge, rightEdge, bottomEdge);
-        } else {
-            actualRect = mode.getZoneRect();
-        }
-    }
-
-    private void drawLayers(Canvas canvas) {
-        for (Layer layer : layersManager.getVisibleLayers())
-            layer.onDraw(canvas, mode.getZoneRect(), actualRect);
-    }
-
-    private void drawDebugLayer(Canvas canvas) {
-        if (debugLayer == null)
-            debugLayer = new DebugLayer();
-
-        debugLayer.showZoneRect(AppConfig.DEBUG_LAYER_SHOW_ZONE_RECT);
-        debugLayer.showActualRect(AppConfig.DEBUG_LAYER_SHOW_ACTUAL_RECT);
-
-        if (AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT) {
-            debugLayer.clearDebugText();
-            debugLayer.prepareDebugText(gyroXOffset, gyroYOffset);
-            debugLayer.addDebugText("gyroXOffset: " + String.valueOf(gyroXOffset));
-            debugLayer.addDebugText("gyroYOffset: " + String.valueOf(gyroYOffset));
-            debugLayer.addDebugText("rotationZ: " + String.valueOf(rotationZ));
-        }
-
-        if (AppConfig.DEBUG_LAYER_SHOW_LAST_SHOT)
-            debugLayer.showLastShot(shotX, shotY);
-
-        debugLayer.onDraw(canvas, mode.getZoneRect(), actualRect);
-    }
-
     private class RefreshThread extends Thread {
         private final SurfaceHolder surfaceHolder;
 
@@ -192,9 +202,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                 try {
                     canvas = surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder) {
-                        moveCanvasBasedOnSensorValues(canvas);
                         clearLastFrame(canvas);
-                        drawLayers(canvas);
+                        drawLayersAndMoveCanvas(canvas);
                         if (AppConfig.SHOW_DEBUG_LAYER)
                             drawDebugLayer(canvas);
                     }
@@ -212,17 +221,55 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        private void moveCanvasBasedOnSensorValues(Canvas canvas) {
-            canvas.translate(screenHalfWidth + gyroXOffset, screenHalfHeight + gyroYOffset);
-            if (AppConfig.ALLOW_ROTATION_SENSOR)
-                canvas.rotate(rotationZ);
-        }
-
         private void clearLastFrame(Canvas canvas) {
             if (isTransparent)
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             else
                 canvas.drawColor(AppConfig.LAYERS_VIEW_BACKGROUND_COLOR);
+        }
+
+        private void drawLayersAndMoveCanvas(Canvas canvas) {
+            moveCanvasToTheCenter(canvas);
+            for (Layer layer : layersManager.getVisibleLayers()) {
+                canvas.save();
+                if (!layer.isStatic())
+                    moveCanvasBySensors(canvas);
+                layer.onDraw(canvas, mode.getZoneRect(), actualRect);
+                canvas.restore();
+            }
+        }
+
+        private void moveCanvasToTheCenter(Canvas canvas) {
+            canvas.translate(screenHalfWidth, screenHalfHeight);
+        }
+
+        private void moveCanvasBySensors(Canvas canvas) {
+            canvas.translate(gyroXOffset, gyroYOffset);
+            if (AppConfig.ALLOW_ROTATION_SENSOR)
+                canvas.rotate(rotationZ);
+        }
+
+        private void drawDebugLayer(Canvas canvas) {
+            if (debugLayer == null)
+                debugLayer = new DebugLayer();
+
+            moveCanvasBySensors(canvas);
+
+            debugLayer.showZoneRect(AppConfig.DEBUG_LAYER_SHOW_ZONE_RECT);
+            debugLayer.showActualRect(AppConfig.DEBUG_LAYER_SHOW_ACTUAL_RECT);
+
+            if (AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT) {
+                debugLayer.clearDebugText();
+                debugLayer.prepareDebugText(gyroXOffset, gyroYOffset);
+                debugLayer.addDebugText("gyroXOffset: " + String.valueOf(gyroXOffset));
+                debugLayer.addDebugText("gyroYOffset: " + String.valueOf(gyroYOffset));
+                debugLayer.addDebugText("rotationZ: " + String.valueOf(rotationZ));
+            }
+
+            if (AppConfig.DEBUG_LAYER_SHOW_LAST_SHOT)
+                debugLayer.showLastShot(shotX, shotY);
+
+            debugLayer.onDraw(canvas, mode.getZoneRect(), actualRect);
         }
 
         private void stopThread() {

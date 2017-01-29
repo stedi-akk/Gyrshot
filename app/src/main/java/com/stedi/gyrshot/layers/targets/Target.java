@@ -28,11 +28,11 @@ public abstract class Target extends Layer {
 
     protected abstract void onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect);
 
-    protected float getX() {
+    public float getX() {
         return x;
     }
 
-    protected float getY() {
+    public float getY() {
         return y;
     }
 

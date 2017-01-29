@@ -9,7 +9,7 @@ import android.graphics.Paint;
 public final class AppConfig {
     // core
     public static final boolean ALLOW_CAMERA = true;
-    public static final boolean ALLOW_ROTATION_SENSOR = false; // experimental
+    public static final boolean ALLOW_ROTATION_SENSOR = false; // experimental and not finished yet
     public static final float GYROSCOPE_SENSOR_ACCURACY = 0.02f;
     public static final float ROTATION_SENSOR_ACCURACY = 0.005f;
 
@@ -23,7 +23,7 @@ public final class AppConfig {
 
     // debug info
     public static final boolean SHOW_DEBUG_LAYER = true;
-    public static final boolean DEBUG_LAYER_SHOW_DEBUG_TEXT = true; // sensor values, etc
+    public static final boolean DEBUG_LAYER_SHOW_DEBUG_TEXT = false; // sensor values, etc
     public static final boolean DEBUG_LAYER_SHOW_ZONE_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_ACTUAL_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_LAST_SHOT = true;

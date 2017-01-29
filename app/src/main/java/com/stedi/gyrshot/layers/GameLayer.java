@@ -14,8 +14,29 @@ public class GameLayer extends Layer {
     private Games.Type type;
     private List<Target> targets;
 
+    private List<TargetsListener> listeners;
+
+    public interface TargetsListener {
+        void onNewTarget(Target target);
+
+        void onDrawTargets(List<Target> targets);
+
+        void onTargetDelete(Target target);
+    }
+
     public GameLayer(Games.Type type) {
         this.type = type;
+    }
+
+    public void addListener(TargetsListener listener) {
+        if (listeners == null)
+            listeners = new ArrayList<>();
+        listeners.add(listener);
+    }
+
+    public void removeListener(TargetsListener listener) {
+        if (listeners != null)
+            listeners.remove(listener);
     }
 
     @Override
@@ -39,16 +60,21 @@ public class GameLayer extends Layer {
                 if (target == null)
                     continue;
                 targets.add(target);
+                notifyNew(target);
             }
         }
 
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
-            if (target != null && target.isAlive())
+            if (target != null && target.isAlive()) {
                 target.onDraw(canvas, zoneRect, actualRect);
-            else
+            } else {
                 targets.set(i, TargetsFactory.create(type, actualRect));
+                notifyDelete(target);
+            }
         }
+
+        notifyOnDraw();
     }
 
     @Override
@@ -59,10 +85,29 @@ public class GameLayer extends Layer {
                 ShotCallback callback = target.onShot(shotX, shotY);
                 if (callback != null) {
                     targets.set(i, null);
+                    notifyDelete(target);
                     return callback;
                 }
             }
         }
         return null;
+    }
+
+    private void notifyNew(Target target) {
+        if (listeners != null)
+            for (TargetsListener listener : listeners)
+                listener.onNewTarget(target);
+    }
+
+    private void notifyOnDraw() {
+        if (listeners != null)
+            for (TargetsListener listener : listeners)
+                listener.onDrawTargets(targets);
+    }
+
+    private void notifyDelete(Target target) {
+        if (listeners != null)
+            for (TargetsListener listener : listeners)
+                listener.onTargetDelete(target);
     }
 }
