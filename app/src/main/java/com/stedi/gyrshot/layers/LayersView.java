@@ -183,6 +183,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         private final SurfaceHolder surfaceHolder;
 
         private boolean run = true;
+        private boolean canvasMoved;
 
         private RefreshThread(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
@@ -222,18 +223,24 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         private void drawLayersAndMoveCanvas(Canvas canvas) {
-            moveCanvasToTheCenter(canvas);
-            for (Layer layer : layersManager.getVisibleLayers()) {
-                canvas.save();
-                if (!layer.isStatic())
-                    moveCanvasBySensors(canvas);
-                layer.onDraw(canvas, mode.getZoneRect(), actualRect);
-                canvas.restore();
-            }
-        }
-
-        private void moveCanvasToTheCenter(Canvas canvas) {
+            // 0,0 point is always in the center of the screen
             canvas.translate(screenHalfWidth, screenHalfHeight);
+
+            canvasMoved = false;
+            canvas.save(Canvas.MATRIX_SAVE_FLAG);
+            for (Layer layer : layersManager.getVisibleLayers()) {
+                if (!canvasMoved && !layer.isStatic()) {
+                    moveCanvasBySensors(canvas);
+                    canvasMoved = true;
+                } else if (canvasMoved && layer.isStatic()) {
+                    canvas.restore();
+                    canvas.save(Canvas.MATRIX_SAVE_FLAG);
+                    canvasMoved = false;
+                }
+
+                layer.onDraw(canvas, mode.getZoneRect(), actualRect);
+            }
+            canvas.restore();
         }
 
         private void moveCanvasBySensors(Canvas canvas) {

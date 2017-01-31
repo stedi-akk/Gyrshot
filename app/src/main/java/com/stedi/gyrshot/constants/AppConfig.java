@@ -22,7 +22,7 @@ public final class AppConfig {
     public static final int[] STATIC_GAME_SIZE = new int[]{700, 700};
 
     // debug info
-    public static final boolean SHOW_DEBUG_LAYER = true;
+    public static final boolean SHOW_DEBUG_LAYER = false;
     public static final boolean DEBUG_LAYER_SHOW_DEBUG_TEXT = false; // sensor values, etc
     public static final boolean DEBUG_LAYER_SHOW_ZONE_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_ACTUAL_RECT = true;
