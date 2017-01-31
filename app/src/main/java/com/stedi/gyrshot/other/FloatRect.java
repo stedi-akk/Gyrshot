@@ -37,18 +37,26 @@ public class FloatRect {
     }
 
     public float forceInLeftRight(float x) {
-        if (x < left)
-            return left;
-        if (x > right)
-            return right;
-        return x;
+        return forceInLeftRight(x, 0);
+    }
+
+    public float forceInLeftRight(float x, float offset) {
+        return forceIn(x, offset, left, right);
     }
 
     public float forceInTopBottom(float y) {
-        if (y < top)
-            return top;
-        if (y > bottom)
-            return bottom;
-        return y;
+        return forceInTopBottom(y, 0);
+    }
+
+    public float forceInTopBottom(float y, float offset) {
+        return forceIn(y, offset, top, bottom);
+    }
+
+    private float forceIn(float value, float offset, float from, float to) {
+        if (value + offset < from)
+            return from;
+        if (value - offset > to)
+            return to;
+        return value;
     }
 }

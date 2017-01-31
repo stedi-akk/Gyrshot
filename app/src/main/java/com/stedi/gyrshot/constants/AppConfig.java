@@ -27,6 +27,7 @@ public final class AppConfig {
     public static final boolean DEBUG_LAYER_SHOW_ZONE_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_ACTUAL_RECT = true;
     public static final boolean DEBUG_LAYER_SHOW_LAST_SHOT = true;
+    public static final boolean ALWAYS_SHOW_TARGET_POINTER = false;
 
     // misc
     public static final int LAYERS_VIEW_BACKGROUND_COLOR = Color.BLACK; // ignored if ALLOW_CAMERA = true
