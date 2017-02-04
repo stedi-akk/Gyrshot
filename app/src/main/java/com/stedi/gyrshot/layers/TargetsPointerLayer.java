@@ -11,7 +11,7 @@ import com.stedi.gyrshot.other.PaintFactory;
 
 import java.util.List;
 
-public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListener, LayersView.OnSensorValues {
+public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListener, LayersView.OnNewTranslateValues {
     private final Paint paint = PaintFactory.create(Color.BLUE);
 
     private List<Target> gameTargets;
@@ -23,6 +23,16 @@ public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListe
     public TargetsPointerLayer() {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(10);
+    }
+
+    @Override
+    public void onAddToLayersView(LayersView layersView) {
+        layersView.addOnNewTranslateValuesListener(this);
+    }
+
+    @Override
+    public void onRemoveFromLayersView(LayersView layersView) {
+        layersView.removeOnNewTranslateValuesListener(this);
     }
 
     @Override

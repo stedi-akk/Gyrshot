@@ -36,6 +36,11 @@ public class FloatRect {
         return -top + bottom;
     }
 
+    public boolean isInside(float x, float y) {
+        return x >= left && x <= right
+                && y >= top && y <= bottom;
+    }
+
     public float forceInLeftRight(float x) {
         return forceInLeftRight(x, 0);
     }

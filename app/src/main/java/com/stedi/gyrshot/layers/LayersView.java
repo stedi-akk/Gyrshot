@@ -26,13 +26,12 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private float screenHalfWidth, screenHalfHeight;
     private float gyroXOffset, gyroYOffset, rotationZ;
-    private float shotX, shotY;
 
     private boolean isTransparent;
 
-    private List<OnSensorValues> onSensorListeners;
+    private List<OnNewTranslateValues> onNewTranslateValuesListeners;
 
-    public interface OnSensorValues {
+    public interface OnNewTranslateValues {
         void onGyroXYOffset(float gyroXOffset, float gyroYOffset);
 
         void onRotationZ(float rotationZ);
@@ -71,14 +70,22 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void addLayer(Layer layer, boolean addToBackStack) {
         layersManager.addLayer(layer, addToBackStack);
+        layer.onAddToLayersView(this);
     }
 
     public boolean removeLayer(Layer layer) {
-        return layersManager.removeLayer(layer);
+        boolean result = layersManager.removeLayer(layer);
+        if (result)
+            layer.onRemoveFromLayersView(this);
+        return result;
     }
 
     public boolean popBackStack() {
-        return layersManager.popBackStack();
+        Layer layer = layersManager.getBackStack().peek();
+        boolean result = layersManager.popBackStack();
+        if (result)
+            layer.onRemoveFromLayersView(this);
+        return result;
     }
 
     public Stack<Layer> getBackStack() {
@@ -99,15 +106,15 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         isTransparent = value;
     }
 
-    public void addOnSensorValuesListener(OnSensorValues listener) {
-        if (onSensorListeners == null)
-            onSensorListeners = new ArrayList<>();
-        onSensorListeners.add(listener);
+    public void addOnNewTranslateValuesListener(OnNewTranslateValues listener) {
+        if (onNewTranslateValuesListeners == null)
+            onNewTranslateValuesListeners = new ArrayList<>();
+        onNewTranslateValuesListeners.add(listener);
     }
 
-    public void removeOnSensorValuesListener(OnSensorValues listener) {
-        if (onSensorListeners != null)
-            onSensorListeners.remove(listener);
+    public void removeOnNewTranslateValuesListener(OnNewTranslateValues listener) {
+        if (onNewTranslateValuesListeners != null)
+            onNewTranslateValuesListeners.remove(listener);
     }
 
     public void updateFromGyroscope(float gyroX, float gyroY) {
@@ -126,10 +133,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public ShotCallback onShot() {
-        shotX = -gyroXOffset;
-        shotY = -gyroYOffset;
         for (Layer layer : layersManager.getVisibleLayers()) {
-            ShotCallback callback = layer.onShot(shotX, shotY);
+            ShotCallback callback = layer.onShot(-gyroXOffset, -gyroYOffset);
             if (callback != null)
                 return callback;
         }
@@ -150,14 +155,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void notifyNewGyroValues() {
-        if (onSensorListeners != null)
-            for (OnSensorValues listener : onSensorListeners)
+        if (onNewTranslateValuesListeners != null)
+            for (OnNewTranslateValues listener : onNewTranslateValuesListeners)
                 listener.onGyroXYOffset(gyroXOffset, gyroYOffset);
     }
 
     private void notifyNewRotationValue() {
-        if (onSensorListeners != null)
-            for (OnSensorValues listener : onSensorListeners)
+        if (onNewTranslateValuesListeners != null)
+            for (OnNewTranslateValues listener : onNewTranslateValuesListeners)
                 listener.onRotationZ(rotationZ);
     }
 

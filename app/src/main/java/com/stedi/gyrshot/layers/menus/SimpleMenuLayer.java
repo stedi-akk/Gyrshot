@@ -3,6 +3,7 @@ package com.stedi.gyrshot.layers.menus;
 import android.graphics.Canvas;
 
 import com.stedi.gyrshot.layers.Layer;
+import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.menus.buttons.SimpleButton;
 import com.stedi.gyrshot.other.FloatRect;
 
@@ -11,7 +12,25 @@ public abstract class SimpleMenuLayer extends Layer {
 
     public abstract SimpleButton[] getButtons();
 
+    @Override
+    public void onAddToLayersView(LayersView layersView) {
+        if (buttons == null)
+            throw new IllegalArgumentException("prepare() was not called");
+
+        for (SimpleButton button : buttons)
+            button.onAddToLayersView(layersView);
+    }
+
+    @Override
+    public void onRemoveFromLayersView(LayersView layersView) {
+        for (SimpleButton button : buttons)
+            button.onRemoveFromLayersView(layersView);
+    }
+
     protected void prepare() {
+        if (buttons != null)
+            throw new IllegalArgumentException("prepare() should be called only once");
+
         buttons = getButtons();
 
         float buttonsHeight = 0;

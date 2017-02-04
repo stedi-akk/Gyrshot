@@ -132,7 +132,6 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
                 pointerLayer = new TargetsPointerLayer();
                 gameLayer.addListener(pointerLayer);
                 layersView.addLayer(gameLayer, true);
-                layersView.addOnSensorValuesListener(pointerLayer);
                 layersView.addLayer(pointerLayer);
                 invalidateOverlayBackButton();
             }
@@ -143,7 +142,6 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
     public void onBackClick() {
         if (layersView.getBackStack().peek() == gameLayer) {
             gameLayer.removeListener(pointerLayer);
-            layersView.removeOnSensorValuesListener(pointerLayer);
             layersView.removeLayer(pointerLayer);
             pointerLayer = null;
             gameLayer = null;
