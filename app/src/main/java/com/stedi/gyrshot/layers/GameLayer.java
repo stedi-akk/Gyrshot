@@ -4,8 +4,8 @@ import android.graphics.Canvas;
 
 import com.stedi.gyrshot.constants.Games;
 import com.stedi.gyrshot.layers.targets.Target;
-import com.stedi.gyrshot.layers.targets.TargetsFactory;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.TargetsFactory;
 
 import java.util.ArrayList;
 import java.util.List;

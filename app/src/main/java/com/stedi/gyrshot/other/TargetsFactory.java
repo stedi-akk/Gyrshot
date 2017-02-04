@@ -1,8 +1,9 @@
-package com.stedi.gyrshot.layers.targets;
+package com.stedi.gyrshot.other;
 
 import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.constants.Games;
-import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.layers.targets.DecreasesTarget;
+import com.stedi.gyrshot.layers.targets.Target;
 
 public class TargetsFactory {
     public static Target create(Games.Type type, FloatRect rect) {
