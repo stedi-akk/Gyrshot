@@ -21,7 +21,8 @@ import com.stedi.gyrshot.other.Mode;
 import com.stedi.gyrshot.other.SensorController;
 import com.stedi.gyrshot.overlay.OverlayView;
 
-public class MainActivity extends CameraActivity implements SensorController.SensorListener, OverlayView.Listener {
+public class MainActivity extends CameraActivity implements
+        SensorController.SensorListener, OverlayView.Listener, LayersView.OnDrawException {
     private SensorController sensorController;
 
     private ViewGroup cameraPreviewContainer;
@@ -41,6 +42,9 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
         cameraPreviewContainer = (ViewGroup) findViewById(R.id.main_activity_camera_preview_container);
         layersView = (LayersView) findViewById(R.id.main_activity_layers_view);
         overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
+
+        if (AppConfig.TOAST_ON_LAYERS_VIEW_EXCEPTION)
+            layersView.setOnDrawExceptionListener(this);
 
         sensorController = new SensorController(this);
         initLayersAndOverlay();
@@ -104,11 +108,24 @@ public class MainActivity extends CameraActivity implements SensorController.Sen
     }
 
     @Override
+    public void onDrawException(final Exception ex) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String message = ex.getMessage();
+                Toast.makeText(MainActivity.this,
+                        String.format("LayersView %s", message == null ? "unknown exception" : message),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
     public void onShot() {
         ShotCallback callback = layersView.onShot();
         if (callback != null) {
             if (callback instanceof DecreasesTarget.OnShot) {
-                Toast.makeText(this, "Gotcha !", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Gotcha !", Toast.LENGTH_SHORT).show();
                 return;
             }
             if (callback instanceof StartMenuLayer.OnShot) {

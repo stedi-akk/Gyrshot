@@ -22,6 +22,7 @@ public final class AppConfig {
     public static final int[] STATIC_GAME_SIZE = new int[]{700, 700};
 
     // debug info
+    public static final boolean TOAST_ON_LAYERS_VIEW_EXCEPTION = true;
     public static final boolean DEBUG_ZONE_LAYER = false;
     public static final boolean ALWAYS_SHOW_TARGET_POINTER = false;
 

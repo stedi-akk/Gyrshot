@@ -30,11 +30,16 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean isTransparent;
 
     private List<OnNewTranslateValues> onNewTranslateValuesListeners;
+    private OnDrawException onExceptionListener;
 
     public interface OnNewTranslateValues {
         void onGyroXYOffset(float gyroXOffset, float gyroYOffset);
 
         void onRotationZ(float rotationZ);
+    }
+
+    public interface OnDrawException {
+        void onDrawException(Exception ex);
     }
 
     public LayersView(Context context) {
@@ -104,6 +109,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void setTransparent(boolean value) {
         isTransparent = value;
+    }
+
+    public void setOnDrawExceptionListener(OnDrawException onExceptionListener) {
+        this.onExceptionListener = onExceptionListener;
     }
 
     public void addOnNewTranslateValuesListener(OnNewTranslateValues listener) {
@@ -204,12 +213,16 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    if (onExceptionListener != null)
+                        onExceptionListener.onDrawException(e);
                 } finally {
                     if (canvas != null) {
                         try {
                             surfaceHolder.unlockCanvasAndPost(canvas);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            if (onExceptionListener != null)
+                                onExceptionListener.onDrawException(e);
                         }
                     }
                 }
