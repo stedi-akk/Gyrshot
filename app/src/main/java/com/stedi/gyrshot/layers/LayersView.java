@@ -20,8 +20,6 @@ import java.util.Stack;
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private final LayersManager layersManager = LayersManager.getInstance();
 
-    private DebugLayer debugLayer;
-
     private RefreshThread thread;
     private Mode mode;
     private FloatRect actualRect;
@@ -197,9 +195,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     canvas = surfaceHolder.lockCanvas();
                     synchronized (surfaceHolder) {
                         clearLastFrame(canvas);
-                        drawLayersAndMoveCanvas(canvas);
-                        if (AppConfig.SHOW_DEBUG_LAYER)
-                            drawDebugLayer(canvas);
+                        drawLayers(canvas);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -222,10 +218,11 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawColor(AppConfig.LAYERS_VIEW_BACKGROUND_COLOR);
         }
 
-        private void drawLayersAndMoveCanvas(Canvas canvas) {
+        private void drawLayers(Canvas canvas) {
             // 0,0 point is always in the center of the screen
             canvas.translate(screenHalfWidth, screenHalfHeight);
 
+            // moving canvas for non static layers
             canvasMoved = false;
             canvas.save(Canvas.MATRIX_SAVE_FLAG);
             for (Layer layer : layersManager.getVisibleLayers()) {
@@ -247,29 +244,6 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.translate(gyroXOffset, gyroYOffset);
             if (AppConfig.ALLOW_ROTATION_SENSOR)
                 canvas.rotate(rotationZ);
-        }
-
-        private void drawDebugLayer(Canvas canvas) {
-            if (debugLayer == null)
-                debugLayer = new DebugLayer();
-
-            moveCanvasBySensors(canvas);
-
-            debugLayer.showZoneRect(AppConfig.DEBUG_LAYER_SHOW_ZONE_RECT);
-            debugLayer.showActualRect(AppConfig.DEBUG_LAYER_SHOW_ACTUAL_RECT);
-
-            if (AppConfig.DEBUG_LAYER_SHOW_DEBUG_TEXT) {
-                debugLayer.clearDebugText();
-                debugLayer.prepareDebugText(gyroXOffset, gyroYOffset);
-                debugLayer.addDebugText("gyroXOffset: " + String.valueOf(gyroXOffset));
-                debugLayer.addDebugText("gyroYOffset: " + String.valueOf(gyroYOffset));
-                debugLayer.addDebugText("rotationZ: " + String.valueOf(rotationZ));
-            }
-
-            if (AppConfig.DEBUG_LAYER_SHOW_LAST_SHOT)
-                debugLayer.showLastShot(shotX, shotY);
-
-            debugLayer.onDraw(canvas, mode.getZoneRect(), actualRect);
         }
 
         private void stopThread() {
