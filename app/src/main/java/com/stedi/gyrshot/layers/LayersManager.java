@@ -1,6 +1,7 @@
 package com.stedi.gyrshot.layers;
 
 import com.stedi.gyrshot.App;
+import com.stedi.gyrshot.constants.AppConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,21 +26,29 @@ public class LayersManager {
     }
 
     public void attachLayerToTheTop(Layer layer) {
-        logState("before attachLayerToTheTop");
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("before attachLayerToTheTop");
+
         topVisibleLayer = null;
         addLayer(layer);
         topVisibleLayer = layer;
-        logState("after attachLayerToTheTop");
+
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("after attachLayerToTheTop");
     }
 
     public void attachLayerToTheBottom(Layer layer) {
-        logState("before attachLayerToTheBottom");
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("before attachLayerToTheBottom");
+
         if (visibleLayers.isEmpty())
             addLayer(layer);
         else
             visibleLayers.add(0, layer);
         bottomVisibleLayer = layer;
-        logState("after attachLayerToTheBottom");
+
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("after attachLayerToTheBottom");
     }
 
     public void addLayer(Layer layer) {
@@ -47,7 +56,9 @@ public class LayersManager {
     }
 
     public void addLayer(Layer layer, boolean addToBackStack) {
-        logState("before addLayer");
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("before addLayer");
+
         if (topVisibleLayer == null)
             visibleLayers.add(layer);
         else
@@ -57,11 +68,15 @@ public class LayersManager {
                 visibleLayers.remove(backStack.peek());
             backStack.push(layer);
         }
-        logState("after addLayer");
+
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("after addLayer");
     }
 
     public boolean removeLayer(Layer layer) {
-        logState("before removeLayer");
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("before removeLayer");
+
         if (!backStack.empty() && backStack.search(layer) != -1)
             throw new IllegalArgumentException("You can't remove layer that exists in the back stack");
         boolean removedFromVisible = visibleLayers.remove(layer);
@@ -71,12 +86,17 @@ public class LayersManager {
             else if (layer == bottomVisibleLayer)
                 bottomVisibleLayer = null;
         }
-        logState("after removeLayer");
+
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("after removeLayer");
+
         return removedFromVisible;
     }
 
     public boolean popBackStack() {
-        logState("before popBackStack");
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("before popBackStack");
+
         if (backStack.empty())
             return false;
         Layer layer = backStack.pop();
@@ -87,7 +107,10 @@ public class LayersManager {
         if (!removed)
             throw new IllegalArgumentException("Internal error");
         visibleLayers.add(indexInVisible, backStack.peek());
-        logState("after popBackStack");
+
+        if (AppConfig.DEBUG_LAYERS_MANAGER)
+            logState("after popBackStack");
+
         return true;
     }
 
@@ -105,5 +128,8 @@ public class LayersManager {
                 "\nbackStack.size()=" + backStack.size() +
                 "\nbottomVisibleLayer=" + bottomVisibleLayer +
                 "\ntopVisibleLayer=" + topVisibleLayer);
+        App.log(this, "visibleLayers :");
+        for (Layer layer : visibleLayers)
+            App.log(this, String.valueOf(layer));
     }
 }
