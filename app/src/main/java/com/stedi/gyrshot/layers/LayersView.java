@@ -207,6 +207,9 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                 Canvas canvas = null;
                 try {
                     canvas = surfaceHolder.lockCanvas();
+                    if (canvas == null)
+                        continue;
+
                     synchronized (surfaceHolder) {
                         clearLastFrame(canvas);
                         drawLayers(canvas);

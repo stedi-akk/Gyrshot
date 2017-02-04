@@ -48,6 +48,8 @@ public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListe
             }
 
             for (Target target : gameTargets) {
+                if (target == null)
+                    continue;
 
                 float targetRealX = target.getX() + gyroXOffset;
                 float targetRealY = target.getY() + gyroYOffset;
