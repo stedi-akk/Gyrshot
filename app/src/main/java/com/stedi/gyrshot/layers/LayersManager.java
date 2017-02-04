@@ -9,9 +9,11 @@ import java.util.Stack;
 public class LayersManager {
     private static LayersManager instance;
 
-    private List<Layer> allLayers = new ArrayList<>();
     private List<Layer> visibleLayers = new ArrayList<>();
     private Stack<Layer> backStack = new Stack<>();
+
+    private Layer topVisibleLayer;
+    private Layer bottomVisibleLayer;
 
     private LayersManager() {
     }
@@ -22,19 +24,37 @@ public class LayersManager {
         return instance;
     }
 
+    public void attachLayerToTheTop(Layer layer) {
+        logState("before attachLayerToTheTop");
+        topVisibleLayer = null;
+        addLayer(layer);
+        topVisibleLayer = layer;
+        logState("after attachLayerToTheTop");
+    }
+
+    public void attachLayerToTheBottom(Layer layer) {
+        logState("before attachLayerToTheBottom");
+        if (visibleLayers.isEmpty())
+            addLayer(layer);
+        else
+            visibleLayers.add(0, layer);
+        bottomVisibleLayer = layer;
+        logState("after attachLayerToTheBottom");
+    }
+
     public void addLayer(Layer layer) {
         addLayer(layer, false);
     }
 
     public void addLayer(Layer layer, boolean addToBackStack) {
         logState("before addLayer");
-        allLayers.add(layer);
-        visibleLayers.add(layer);
+        if (topVisibleLayer == null)
+            visibleLayers.add(layer);
+        else
+            visibleLayers.add(visibleLayers.size() - 1, layer);
         if (addToBackStack) {
-            if (!backStack.empty()) {
-                Layer topLayer = backStack.peek();
-                visibleLayers.remove(topLayer);
-            }
+            if (!backStack.empty())
+                visibleLayers.remove(backStack.peek());
             backStack.push(layer);
         }
         logState("after addLayer");
@@ -44,12 +64,15 @@ public class LayersManager {
         logState("before removeLayer");
         if (!backStack.empty() && backStack.search(layer) != -1)
             throw new IllegalArgumentException("You can't remove layer that exists in the back stack");
-        boolean removedFromAll = allLayers.remove(layer);
         boolean removedFromVisible = visibleLayers.remove(layer);
-        if (removedFromAll != removedFromVisible)
-            throw new IllegalArgumentException("Internal error");
+        if (removedFromVisible) {
+            if (layer == topVisibleLayer)
+                topVisibleLayer = null;
+            else if (layer == bottomVisibleLayer)
+                bottomVisibleLayer = null;
+        }
         logState("after removeLayer");
-        return removedFromAll;
+        return removedFromVisible;
     }
 
     public boolean popBackStack() {
@@ -78,8 +101,9 @@ public class LayersManager {
 
     private void logState(String title) {
         App.log(this, title +
-                "\nallLayers.size()=" + allLayers.size() +
                 "\nvisibleLayers.size()=" + visibleLayers.size() +
-                "\nbackStack.size()=" + backStack.size());
+                "\nbackStack.size()=" + backStack.size() +
+                "\nbottomVisibleLayer=" + bottomVisibleLayer +
+                "\ntopVisibleLayer=" + topVisibleLayer);
     }
 }

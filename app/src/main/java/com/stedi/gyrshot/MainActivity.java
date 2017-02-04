@@ -12,6 +12,7 @@ import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
+import com.stedi.gyrshot.layers.ShotPointerLayer;
 import com.stedi.gyrshot.layers.TargetsPointerLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
 import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
@@ -197,7 +198,8 @@ public class MainActivity extends CameraActivity implements
         Mode initMode = currentMode;
         if (initMode == null) { // first launch
             initMode = Mode.MENU;
-            layersView.addLayer(new ZoneLayer());
+            layersView.attachLayerToTheBottom(new ZoneLayer());
+            layersView.attachLayerToTheTop(new ShotPointerLayer());
             layersView.addLayer(new StartMenuLayer(), true);
         }
         changeModeTo(initMode);

@@ -15,6 +15,7 @@ import com.stedi.gyrshot.other.Mode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Stack;
 
 public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
@@ -67,6 +68,16 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     public void setMode(Mode mode) {
         this.mode = mode;
         calculateActualRect();
+    }
+
+    public void attachLayerToTheTop(Layer layer) {
+        layersManager.attachLayerToTheTop(layer);
+        layer.onAddToLayersView(this);
+    }
+
+    public void attachLayerToTheBottom(Layer layer) {
+        layersManager.attachLayerToTheBottom(layer);
+        layer.onAddToLayersView(this);
     }
 
     public void addLayer(Layer layer) {
@@ -142,8 +153,9 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public ShotCallback onShot() {
-        for (Layer layer : layersManager.getVisibleLayers()) {
-            ShotCallback callback = layer.onShot(-gyroXOffset, -gyroYOffset);
+        List<Layer> layers = layersManager.getVisibleLayers();
+        for (ListIterator<Layer> iterator = layers.listIterator(layers.size()); iterator.hasPrevious(); ) {
+            ShotCallback callback = iterator.previous().onShot(-gyroXOffset, -gyroYOffset);
             if (callback != null)
                 return callback;
         }
