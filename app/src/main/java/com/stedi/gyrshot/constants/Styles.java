@@ -13,6 +13,7 @@ public final class Styles {
         public static final int BUTTON_BODY = Color.WHITE;
         public static final int BUTTON_BORDER = Color.BLACK;
         public static final int BUTTON_TEXT = Color.BLACK;
+        public static final int GAME_INFO_TEXT = Color.WHITE;
     }
 
     public static class Sizes {
@@ -21,5 +22,6 @@ public final class Styles {
         public static final float BUTTON_TEXT_SIZE = BUTTON_HEIGHT / 2;
         public static final float BUTTON_BORDER_WIDTH = 1f;
         public static final float BUTTON_PADDING = App.dp2px(2);
+        public static final float GAME_INFO_TEXT_SIZE = App.dp2px(18);
     }
 }

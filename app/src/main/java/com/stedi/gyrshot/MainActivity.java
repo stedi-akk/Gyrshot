@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.layers.GameInfoLayer;
 import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
@@ -34,6 +35,7 @@ public class MainActivity extends CameraActivity implements
 
     private GameLayer gameLayer;
     private TargetsPointerLayer pointerLayer;
+    private GameInfoLayer gameInfoLayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,9 +150,12 @@ public class MainActivity extends CameraActivity implements
                 changeModeTo(Mode.GAME);
                 gameLayer = new GameLayer(onShot.type);
                 pointerLayer = new TargetsPointerLayer();
+                gameInfoLayer = new GameInfoLayer();
                 gameLayer.addListener(pointerLayer);
+                gameLayer.addListener(gameInfoLayer);
                 layersView.addLayer(gameLayer, true);
                 layersView.addLayer(pointerLayer);
+                layersView.addLayer(gameInfoLayer);
                 invalidateOverlayBackButton();
             }
         }
@@ -160,7 +165,9 @@ public class MainActivity extends CameraActivity implements
     public void onBackClick() {
         if (layersView.getBackStack().peek() == gameLayer) {
             gameLayer.removeListener(pointerLayer);
+            gameLayer.removeListener(gameInfoLayer);
             layersView.removeLayer(pointerLayer);
+            layersView.removeLayer(gameInfoLayer);
             pointerLayer = null;
             gameLayer = null;
         }

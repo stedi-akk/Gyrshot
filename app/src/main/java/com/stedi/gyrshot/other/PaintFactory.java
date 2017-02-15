@@ -10,6 +10,7 @@ public class PaintFactory {
         BUTTON_BODY,
         BUTTON_TEXT,
         BUTTON_BORDER,
+        GAME_INFO_TEXT,
     }
 
     public static Paint create() {
@@ -38,6 +39,12 @@ public class PaintFactory {
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setColor(Styles.Colors.BUTTON_BORDER);
                 paint.setStrokeWidth(Styles.Sizes.BUTTON_BORDER_WIDTH);
+                break;
+            case GAME_INFO_TEXT:
+                paint.setTextSize(Styles.Sizes.GAME_INFO_TEXT_SIZE);
+                paint.setTextAlign(Paint.Align.CENTER);
+                paint.setColor(Styles.Colors.GAME_INFO_TEXT);
+                break;
         }
 
         return paint;

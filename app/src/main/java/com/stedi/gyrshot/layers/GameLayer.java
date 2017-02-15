@@ -21,7 +21,7 @@ public class GameLayer extends Layer {
 
         void onDrawTargets(List<Target> targets);
 
-        void onTargetDelete(Target target);
+        void onTargetDelete(Target target, boolean fromShot);
     }
 
     public GameLayer(Games.Type type) {
@@ -70,7 +70,7 @@ public class GameLayer extends Layer {
                 target.onDraw(canvas, zoneRect, actualRect);
             } else {
                 targets.set(i, TargetsFactory.create(type, actualRect));
-                notifyDelete(target);
+                notifyDelete(target, false);
             }
         }
 
@@ -85,7 +85,7 @@ public class GameLayer extends Layer {
                 ShotCallback callback = target.onShot(shotX, shotY);
                 if (callback != null) {
                     targets.set(i, null);
-                    notifyDelete(target);
+                    notifyDelete(target, true);
                     return callback;
                 }
             }
@@ -105,9 +105,9 @@ public class GameLayer extends Layer {
                 listener.onDrawTargets(targets);
     }
 
-    private void notifyDelete(Target target) {
+    private void notifyDelete(Target target, boolean fromShot) {
         if (listeners != null)
             for (TargetsListener listener : listeners)
-                listener.onTargetDelete(target);
+                listener.onTargetDelete(target, fromShot);
     }
 }

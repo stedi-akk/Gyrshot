@@ -2,6 +2,8 @@ package com.stedi.gyrshot;
 
 import android.app.Application;
 import android.content.res.Resources;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -68,6 +70,12 @@ public class App extends Application {
     public static int rand(int from, int to) {
         int n = (to - from) + 1;
         return n < 0 ? 0 : instance.random.nextInt(n) + from;
+    }
+
+    public static int getTextHeight(String text, Paint textPaint) {
+        Rect textBounds = new Rect();
+        textPaint.getTextBounds(text, 0, text.length(), textBounds);
+        return textBounds.height();
     }
 
     public static void log(Object classObj, String message) {

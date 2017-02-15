@@ -3,6 +3,8 @@ package com.stedi.gyrshot.constants;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Application control params
  */
@@ -30,4 +32,5 @@ public final class AppConfig {
     // misc
     public static final int LAYERS_VIEW_BACKGROUND_COLOR = Color.BLACK; // ignored if ALLOW_CAMERA = true
     public static final int PAINT_FLAGS = Paint.ANTI_ALIAS_FLAG;
+    public static final long MAX_GAME_TIME = TimeUnit.MINUTES.toMillis(30); // easter and bugs...
 }

@@ -74,7 +74,7 @@ public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListe
     }
 
     @Override
-    public void onTargetDelete(Target target) {
+    public void onTargetDelete(Target target, boolean fromShot) {
 
     }
 
