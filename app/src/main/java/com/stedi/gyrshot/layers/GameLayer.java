@@ -66,11 +66,15 @@ public class GameLayer extends Layer {
 
         for (int i = 0; i < targets.size(); i++) {
             Target target = targets.get(i);
-            if (target != null && target.isAlive()) {
-                target.onDraw(canvas, zoneRect, actualRect);
+            if (target != null) {
+                if (target.isAlive()) {
+                    target.onDraw(canvas, zoneRect, actualRect);
+                } else {
+                    targets.set(i, TargetsFactory.create(type, actualRect));
+                    notifyDelete(target, false);
+                }
             } else {
                 targets.set(i, TargetsFactory.create(type, actualRect));
-                notifyDelete(target, false);
             }
         }
 
