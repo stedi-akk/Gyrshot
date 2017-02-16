@@ -15,29 +15,41 @@ import java.util.List;
 public class GameInfoLayer extends Layer implements GameLayer.TargetsListener {
     private final Paint textPaint = PaintFactory.create(PaintFactory.Type.GAME_INFO_TEXT);
 
+    private CountUpTimer countUpTimer;
     private String formattedGameTime;
 
     private int[] timerPosition;
+    private boolean inPause;
 
-    private CountUpTimer countUpTimer = new CountUpTimer(Games.GAME_TIMER_FORMAT) {
-        @Override
-        public void onTimeUp(String formattedTime) {
-            formattedGameTime = formattedTime;
-        }
+    @Override
+    public void onAddToLayersView(LayersView layersView) {
+        countUpTimer = new CountUpTimer(Games.GAME_TIMER_FORMAT) {
+            @Override
+            public void onTimeUp(String formattedTime) {
+                formattedGameTime = formattedTime;
+            }
 
-        @Override
-        public void onFinish() {
-            // TODO easter
-        }
-    };
+            @Override
+            public void onFinish() {
+                // TODO easter
+            }
+        };
+    }
 
     @Override
     public void onRemoveFromLayersView(LayersView layersView) {
         countUpTimer.stopCountUp();
+        countUpTimer = null;
+    }
+
+    @Override
+    public void onResume() {
+        inPause = false;
     }
 
     @Override
     public void onPause() {
+        inPause = true;
         countUpTimer.stopCountUp();
     }
 
@@ -48,9 +60,12 @@ public class GameInfoLayer extends Layer implements GameLayer.TargetsListener {
 
     @Override
     public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        if (!countUpTimer.isActive()) {
+        if (countUpTimer != null && !inPause && !countUpTimer.isActive()) {
             formattedGameTime = countUpTimer.startCountUp();
         }
+
+        if (formattedGameTime == null)
+            return;
 
         if (timerPosition == null) {
             int textHeight = App.getTextHeight(formattedGameTime, textPaint);
