@@ -6,6 +6,7 @@ import android.graphics.Paint;
 import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.constants.Games;
 import com.stedi.gyrshot.layers.targets.Target;
+import com.stedi.gyrshot.layers.views.TextLayer;
 import com.stedi.gyrshot.other.CountUpTimer;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
@@ -15,23 +16,26 @@ import java.util.List;
 public class GameInfoLayer extends Layer implements GameLayer.TargetsListener {
     private final Paint textPaint = PaintFactory.create(PaintFactory.Type.GAME_INFO_TEXT);
 
-    private CountUpTimer countUpTimer;
-    private String formattedGameTime;
+    private final TextLayer timerText = new TextLayer(textPaint);
+    private final TextLayer deletedSelfText = new TextLayer(textPaint);
+    private final TextLayer deletedFromShotText = new TextLayer(textPaint);
 
-    private int[] timerPosition;
+    private final float layerPadding = App.dp2px(15);
+
     private boolean inPause;
 
-    private int targetsDeletedSelf;
-    private int[] targetsDeletedSelfPosition;
-    private int targetsDeletedFromShot;
-    private int[] targetsDeletedFromShotPosition;
+    private CountUpTimer countUpTimer;
+
+    private String formattedTime;
+    private int deletedSelf;
+    private int deletedFromShot;
 
     @Override
     public void onAddToLayersView(LayersView layersView) {
         countUpTimer = new CountUpTimer(Games.GAME_TIMER_FORMAT) {
             @Override
             public void onTimeUp(String formattedTime) {
-                formattedGameTime = formattedTime;
+                GameInfoLayer.this.formattedTime = formattedTime;
             }
 
             @Override
@@ -70,40 +74,31 @@ public class GameInfoLayer extends Layer implements GameLayer.TargetsListener {
     }
 
     private void drawTimer(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        if (countUpTimer != null && !inPause && !countUpTimer.isActive()) {
-            formattedGameTime = countUpTimer.startCountUp();
-        }
+        if (countUpTimer != null && !inPause && !countUpTimer.isActive())
+            formattedTime = countUpTimer.startCountUp();
 
-        if (formattedGameTime == null)
+        if (formattedTime == null)
             return;
 
-        if (timerPosition == null) {
-            int textHeight = App.getTextHeight(formattedGameTime, textPaint);
-            timerPosition = new int[]{0, textHeight - canvas.getHeight() / 2};
-        }
+        if (timerText.getTextPosition() == null)
+            timerText.setPosition(0, -canvas.getHeight() / 2 + layerPadding);
 
-        canvas.drawText(formattedGameTime, timerPosition[0], timerPosition[1], textPaint);
+        timerText.setText(formattedTime);
+        timerText.onDraw(canvas, zoneRect, actualRect);
     }
 
     private void drawTargetsInfo(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
-        String targetsDeletedFromShotS = String.valueOf(targetsDeletedFromShot);
-        String targetsDeletedSelfS = String.valueOf(targetsDeletedSelf);
+        if (deletedFromShotText.getTextPosition() == null)
+            deletedFromShotText.setPosition(canvas.getWidth() / 3, -canvas.getHeight() / 2 + layerPadding);
 
-        if (targetsDeletedFromShotPosition == null) {
-            int textHeight = App.getTextHeight(targetsDeletedFromShotS, textPaint);
-            targetsDeletedFromShotPosition = new int[]{canvas.getWidth() / 3, textHeight - canvas.getHeight() / 2};
-        }
+        if (deletedSelfText.getTextPosition() == null)
+            deletedSelfText.setPosition(-canvas.getWidth() / 3, -canvas.getHeight() / 2 + layerPadding);
 
-        if (targetsDeletedSelfPosition == null) {
-            int textHeight = App.getTextHeight(targetsDeletedSelfS, textPaint);
-            targetsDeletedSelfPosition = new int[]{-canvas.getWidth() / 3, textHeight - canvas.getHeight() / 2};
-        }
+        deletedFromShotText.setText(String.valueOf(deletedFromShot));
+        deletedFromShotText.onDraw(canvas, zoneRect, actualRect);
 
-        canvas.drawText(targetsDeletedFromShotS,
-                targetsDeletedFromShotPosition[0], targetsDeletedFromShotPosition[1], textPaint);
-
-        canvas.drawText(targetsDeletedSelfS,
-                targetsDeletedSelfPosition[0], targetsDeletedSelfPosition[1], textPaint);
+        deletedSelfText.setText(String.valueOf(deletedSelf));
+        deletedSelfText.onDraw(canvas, zoneRect, actualRect);
     }
 
     @Override
@@ -119,8 +114,8 @@ public class GameInfoLayer extends Layer implements GameLayer.TargetsListener {
     @Override
     public void onTargetDelete(Target target, boolean fromShot) {
         if (fromShot)
-            targetsDeletedFromShot++;
+            deletedFromShot++;
         else
-            targetsDeletedSelf++;
+            deletedSelf++;
     }
 }
