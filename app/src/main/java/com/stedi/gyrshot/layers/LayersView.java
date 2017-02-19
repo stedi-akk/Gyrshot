@@ -11,7 +11,9 @@ import android.view.SurfaceView;
 
 import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.other.FloatRect;
+import com.stedi.gyrshot.other.LayersThread;
 import com.stedi.gyrshot.other.Mode;
+import com.stedi.gyrshot.other.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,15 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private OnDrawException onExceptionListener;
 
     public interface OnNewTranslateValues {
+        @UiThread
         void onGyroXYOffset(float gyroXOffset, float gyroYOffset);
 
+        @UiThread
         void onRotationZ(float rotationZ);
     }
 
     public interface OnDrawException {
+        @LayersThread
         void onDrawException(Exception ex);
     }
 
@@ -161,13 +166,11 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     public void updateFromGyroscope(float gyroX, float gyroY) {
         gyroXOffset = actualRect.forceInLeftRight(gyroXOffset + gyroX);
         gyroYOffset = actualRect.forceInTopBottom(gyroYOffset + gyroY);
-
         notifyNewGyroValues();
     }
 
     public void updateFromRotationVector(float rotationZ) {
         this.rotationZ = rotationZ;
-
         notifyNewRotationValue();
     }
 
@@ -268,10 +271,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         private void drawLayers(Canvas canvas) {
-            // 0,0 point is always in the center of the screen
             canvas.translate(screenHalfWidth, screenHalfHeight);
 
-            // moving canvas for non static layers
             canvasMoved = false;
             canvas.save(Canvas.MATRIX_SAVE_FLAG);
 
