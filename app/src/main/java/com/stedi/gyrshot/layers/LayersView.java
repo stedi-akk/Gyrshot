@@ -22,13 +22,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     private final LayersManager layersManager = LayersManager.getInstance();
 
     private RefreshThread thread;
-    private Mode mode;
-    private FloatRect actualRect;
 
-    private float screenHalfWidth, screenHalfHeight;
-    private float gyroXOffset, gyroYOffset, rotationZ;
+    private volatile Mode mode;
+    private volatile FloatRect actualRect;
 
-    private boolean isTransparent;
+    private volatile float screenHalfWidth, screenHalfHeight;
+    private volatile float gyroXOffset, gyroYOffset, rotationZ;
+    private volatile boolean isTransparent;
+    private volatile boolean isThreadRunning;
 
     private List<OnNewTranslateValues> onNewTranslateValuesListeners;
     private OnDrawException onExceptionListener;
@@ -138,11 +139,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void updateFromGyroscope(float gyroX, float gyroY) {
-        gyroXOffset += gyroX;
-        gyroYOffset += gyroY;
-
-        gyroXOffset = actualRect.forceInLeftRight(gyroXOffset);
-        gyroYOffset = actualRect.forceInTopBottom(gyroYOffset);
+        gyroXOffset = actualRect.forceInLeftRight(gyroXOffset + gyroX);
+        gyroYOffset = actualRect.forceInTopBottom(gyroYOffset + gyroY);
 
         notifyNewGyroValues();
     }
@@ -189,6 +187,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        isThreadRunning = true;
         thread = new RefreshThread(holder);
         thread.start();
     }
@@ -199,14 +198,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        thread.stopThread();
+        isThreadRunning = false;
+        thread.interrupt();
         thread = null;
     }
 
     private class RefreshThread extends Thread {
         private final SurfaceHolder surfaceHolder;
 
-        private boolean run = true;
         private boolean canvasMoved;
 
         private RefreshThread(SurfaceHolder surfaceHolder) {
@@ -215,7 +214,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
         @Override
         public void run() {
-            while (run) {
+            while (isThreadRunning) {
                 Canvas canvas = null;
                 try {
                     canvas = surfaceHolder.lockCanvas();
@@ -227,17 +226,13 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                         drawLayers(canvas);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    if (onExceptionListener != null)
-                        onExceptionListener.onDrawException(e);
+                    onException(e);
                 } finally {
                     if (canvas != null) {
                         try {
                             surfaceHolder.unlockCanvasAndPost(canvas);
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            if (onExceptionListener != null)
-                                onExceptionListener.onDrawException(e);
+                            onException(e);
                         }
                     }
                 }
@@ -260,7 +255,9 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.save(Canvas.MATRIX_SAVE_FLAG);
             for (Layer layer : layersManager.getVisibleLayers()) {
                 if (!canvasMoved && !layer.isStatic()) {
-                    moveCanvasBySensors(canvas);
+                    canvas.translate(gyroXOffset, gyroYOffset);
+                    if (CoreConfig.ALLOW_ROTATION_SENSOR)
+                        canvas.rotate(rotationZ);
                     canvasMoved = true;
                 } else if (canvasMoved && layer.isStatic()) {
                     canvas.restore();
@@ -273,15 +270,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.restore();
         }
 
-        private void moveCanvasBySensors(Canvas canvas) {
-            canvas.translate(gyroXOffset, gyroYOffset);
-            if (CoreConfig.ALLOW_ROTATION_SENSOR)
-                canvas.rotate(rotationZ);
-        }
-
-        private void stopThread() {
-            run = false;
-            interrupt();
+        private void onException(Exception e) {
+            e.printStackTrace();
+            if (onExceptionListener != null)
+                onExceptionListener.onDrawException(e);
         }
     }
 }

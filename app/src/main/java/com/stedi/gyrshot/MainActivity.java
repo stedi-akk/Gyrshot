@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.layers.Layer;
+import com.stedi.gyrshot.layers.LayersManager;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.ShotPointerLayer;
@@ -31,7 +32,7 @@ public class MainActivity extends CameraActivity implements
     private LayersView layersView;
     private OverlayView overlayView;
 
-    private static Mode currentMode;
+    private static Mode currentMode; // temporal logic
 
     private GameLayer gameLayer;
     private TargetsPointerLayer pointerLayer;
@@ -83,6 +84,13 @@ public class MainActivity extends CameraActivity implements
         sensorController.stopListening();
         layersView.onPause();
         App.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LayersManager.getInstance().clear();
+        currentMode = null;
     }
 
     @Override

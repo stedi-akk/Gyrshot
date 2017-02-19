@@ -122,6 +122,13 @@ public class LayersManager {
         return backStack;
     }
 
+    public void clear() {
+        visibleLayers.clear();
+        backStack.clear();
+        topVisibleLayer = null;
+        bottomVisibleLayer = null;
+    }
+
     private void logState(String title) {
         App.log(this, title +
                 "\nvisibleLayers.size()=" + visibleLayers.size() +
