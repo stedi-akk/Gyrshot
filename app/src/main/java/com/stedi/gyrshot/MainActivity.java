@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.layers.Layer;
-import com.stedi.gyrshot.layers.LayersManager;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.ShotPointerLayer;
@@ -89,7 +88,7 @@ public class MainActivity extends CameraActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LayersManager.getInstance().clear();
+        layersView.removeAllLayers();
         currentMode = null;
     }
 

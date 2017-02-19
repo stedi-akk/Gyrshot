@@ -72,13 +72,17 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void attachLayerToTheTop(Layer layer) {
-        layersManager.attachLayerToTheTop(layer);
-        layer.onAddToLayersView(this);
+        synchronized (layersManager) {
+            layersManager.attachLayerToTheTop(layer);
+            layer.onAddToLayersView(this);
+        }
     }
 
     public void attachLayerToTheBottom(Layer layer) {
-        layersManager.attachLayerToTheBottom(layer);
-        layer.onAddToLayersView(this);
+        synchronized (layersManager) {
+            layersManager.attachLayerToTheBottom(layer);
+            layer.onAddToLayersView(this);
+        }
     }
 
     public void addLayer(Layer layer) {
@@ -86,37 +90,53 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void addLayer(Layer layer, boolean addToBackStack) {
-        layersManager.addLayer(layer, addToBackStack);
-        layer.onAddToLayersView(this);
+        synchronized (layersManager) {
+            layersManager.addLayer(layer, addToBackStack);
+            layer.onAddToLayersView(this);
+        }
     }
 
     public boolean removeLayer(Layer layer) {
-        boolean result = layersManager.removeLayer(layer);
-        if (result)
-            layer.onRemoveFromLayersView(this);
-        return result;
+        synchronized (layersManager) {
+            boolean result = layersManager.removeLayer(layer);
+            if (result)
+                layer.onRemoveFromLayersView(this);
+            return result;
+        }
     }
 
     public boolean popBackStack() {
-        Layer layer = layersManager.getBackStack().peek();
-        boolean result = layersManager.popBackStack();
-        if (result)
-            layer.onRemoveFromLayersView(this);
-        return result;
+        synchronized (layersManager) {
+            Layer layer = layersManager.getBackStack().peek();
+            boolean result = layersManager.popBackStack();
+            if (result)
+                layer.onRemoveFromLayersView(this);
+            return result;
+        }
     }
 
     public Stack<Layer> getBackStack() {
         return layersManager.getBackStack();
     }
 
+    public void removeAllLayers() {
+        synchronized (layersManager) {
+            layersManager.clear();
+        }
+    }
+
     public void onResume() {
-        for (Layer layer : layersManager.getVisibleLayers())
-            layer.onResume();
+        synchronized (layersManager) {
+            for (Layer layer : layersManager.getVisibleLayers())
+                layer.onResume();
+        }
     }
 
     public void onPause() {
-        for (Layer layer : layersManager.getVisibleLayers())
-            layer.onPause();
+        synchronized (layersManager) {
+            for (Layer layer : layersManager.getVisibleLayers())
+                layer.onPause();
+        }
     }
 
     public void setTransparent(boolean value) {
@@ -147,17 +167,20 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     public void updateFromRotationVector(float rotationZ) {
         this.rotationZ = rotationZ;
+
         notifyNewRotationValue();
     }
 
     public ShotCallback onShot() {
-        List<Layer> layers = layersManager.getVisibleLayers();
-        for (ListIterator<Layer> iterator = layers.listIterator(layers.size()); iterator.hasPrevious(); ) {
-            ShotCallback callback = iterator.previous().onShot(-gyroXOffset, -gyroYOffset);
-            if (callback != null)
-                return callback;
+        synchronized (layersManager) {
+            List<Layer> layers = layersManager.getVisibleLayers();
+            for (ListIterator<Layer> iterator = layers.listIterator(layers.size()); iterator.hasPrevious(); ) {
+                ShotCallback callback = iterator.previous().onShot(-gyroXOffset, -gyroYOffset);
+                if (callback != null)
+                    return callback;
+            }
+            return null;
         }
-        return null;
     }
 
     private void calculateActualRect() {
@@ -221,10 +244,8 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                     if (canvas == null)
                         continue;
 
-                    synchronized (surfaceHolder) {
-                        clearLastFrame(canvas);
-                        drawLayers(canvas);
-                    }
+                    clearLastFrame(canvas);
+                    drawLayers(canvas);
                 } catch (Exception e) {
                     onException(e);
                 } finally {
@@ -253,20 +274,24 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             // moving canvas for non static layers
             canvasMoved = false;
             canvas.save(Canvas.MATRIX_SAVE_FLAG);
-            for (Layer layer : layersManager.getVisibleLayers()) {
-                if (!canvasMoved && !layer.isStatic()) {
-                    canvas.translate(gyroXOffset, gyroYOffset);
-                    if (CoreConfig.ALLOW_ROTATION_SENSOR)
-                        canvas.rotate(rotationZ);
-                    canvasMoved = true;
-                } else if (canvasMoved && layer.isStatic()) {
-                    canvas.restore();
-                    canvas.save(Canvas.MATRIX_SAVE_FLAG);
-                    canvasMoved = false;
-                }
 
-                layer.onDraw(canvas, mode.getZoneRect(), actualRect);
+            synchronized (layersManager) {
+                for (Layer layer : layersManager.getVisibleLayers()) {
+                    if (!canvasMoved && !layer.isStatic()) {
+                        canvas.translate(gyroXOffset, gyroYOffset);
+                        if (CoreConfig.ALLOW_ROTATION_SENSOR)
+                            canvas.rotate(rotationZ);
+                        canvasMoved = true;
+                    } else if (canvasMoved && layer.isStatic()) {
+                        canvas.restore();
+                        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+                        canvasMoved = false;
+                    }
+
+                    layer.onDraw(canvas, mode.getZoneRect(), actualRect);
+                }
             }
+
             canvas.restore();
         }
 

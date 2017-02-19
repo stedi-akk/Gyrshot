@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class LayersManager {
+class LayersManager {
     private static LayersManager instance;
 
     private List<Layer> visibleLayers = new ArrayList<>();
