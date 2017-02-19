@@ -1,8 +1,10 @@
-package com.stedi.gyrshot.layers;
+package com.stedi.gyrshot.layers.gamelayers;
 
 import android.graphics.Canvas;
 
 import com.stedi.gyrshot.constants.Games;
+import com.stedi.gyrshot.layers.Layer;
+import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.targets.Target;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.TargetsFactory;

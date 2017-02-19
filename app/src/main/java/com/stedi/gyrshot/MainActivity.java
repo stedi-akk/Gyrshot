@@ -8,14 +8,14 @@ import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
 import com.stedi.gyrshot.constants.AppConfig;
-import com.stedi.gyrshot.layers.GameInfoLayer;
-import com.stedi.gyrshot.layers.GameLayer;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.ShotPointerLayer;
-import com.stedi.gyrshot.layers.TargetsPointerLayer;
 import com.stedi.gyrshot.layers.ZoneLayer;
+import com.stedi.gyrshot.layers.gamelayers.GameInfoLayer;
+import com.stedi.gyrshot.layers.gamelayers.GameLayer;
+import com.stedi.gyrshot.layers.gamelayers.TargetsPointerLayer;
 import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
 import com.stedi.gyrshot.layers.targets.DecreasesTarget;

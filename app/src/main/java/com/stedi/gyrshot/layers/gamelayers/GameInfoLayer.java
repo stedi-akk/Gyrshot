@@ -1,10 +1,12 @@
-package com.stedi.gyrshot.layers;
+package com.stedi.gyrshot.layers.gamelayers;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.constants.Games;
+import com.stedi.gyrshot.layers.Layer;
+import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.targets.Target;
 import com.stedi.gyrshot.layers.views.TextLayer;
 import com.stedi.gyrshot.other.CountUpTimer;
