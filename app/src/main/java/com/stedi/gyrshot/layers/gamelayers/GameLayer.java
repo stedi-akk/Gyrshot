@@ -2,7 +2,7 @@ package com.stedi.gyrshot.layers.gamelayers;
 
 import android.graphics.Canvas;
 
-import com.stedi.gyrshot.constants.Games;
+import com.stedi.gyrshot.constants.GamesConfig;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.targets.Target;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameLayer extends Layer {
-    private Games.Type type;
+    private GamesConfig.Type type;
     private List<Target> targets;
 
     private List<TargetsListener> listeners;
@@ -26,7 +26,7 @@ public class GameLayer extends Layer {
         void onTargetDelete(Target target, boolean fromShot);
     }
 
-    public GameLayer(Games.Type type) {
+    public GameLayer(GamesConfig.Type type) {
         this.type = type;
     }
 

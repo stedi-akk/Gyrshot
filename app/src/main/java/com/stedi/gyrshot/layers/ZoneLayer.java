@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.stedi.gyrshot.App;
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
 
@@ -23,7 +23,7 @@ public class ZoneLayer extends Layer {
     public void onDraw(Canvas canvas, FloatRect zoneRect, FloatRect actualRect) {
         canvas.drawRect(zoneRect.left, zoneRect.top, zoneRect.right, zoneRect.bottom, paint);
 
-        if (AppConfig.DEBUG_ZONE_LAYER)
+        if (CoreConfig.DEBUG_ZONE_LAYER)
             drawDebug(canvas, zoneRect, actualRect);
     }
 

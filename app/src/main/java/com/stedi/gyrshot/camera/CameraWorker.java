@@ -3,7 +3,7 @@ package com.stedi.gyrshot.camera;
 import android.hardware.Camera;
 import android.os.Handler;
 
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 
 public class CameraWorker {
     private final Handler uiHandler = new Handler();
@@ -70,7 +70,7 @@ public class CameraWorker {
             }
 
             private CameraOpenResult tryToOpenCamera(int selectedCameraId) {
-                if (AppConfig.ALLOW_CAMERA) {
+                if (CoreConfig.ALLOW_CAMERA) {
                     try {
                         if (selectedCameraId != -1)
                             return new CameraOpenResult(Camera.open(selectedCameraId), selectedCameraId);

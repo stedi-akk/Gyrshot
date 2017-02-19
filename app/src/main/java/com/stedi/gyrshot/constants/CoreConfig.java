@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Application control params
  */
-public final class AppConfig {
+public final class CoreConfig {
     // core
     public static final boolean ALLOW_CAMERA = false;
     public static final boolean ALLOW_ROTATION_SENSOR = false; // experimental and not finished yet

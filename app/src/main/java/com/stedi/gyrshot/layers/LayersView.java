@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.Mode;
 
@@ -163,7 +163,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void calculateActualRect() {
-        if (AppConfig.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
+        if (CoreConfig.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
             FloatRect rect = mode.getZoneRect();
             float leftEdge = rect.left + screenHalfWidth;
             float rightEdge = rect.right - screenHalfWidth;
@@ -248,7 +248,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
             if (isTransparent)
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             else
-                canvas.drawColor(AppConfig.LAYERS_VIEW_BACKGROUND_COLOR);
+                canvas.drawColor(CoreConfig.LAYERS_VIEW_BACKGROUND_COLOR);
         }
 
         private void drawLayers(Canvas canvas) {
@@ -275,7 +275,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
         private void moveCanvasBySensors(Canvas canvas) {
             canvas.translate(gyroXOffset, gyroYOffset);
-            if (AppConfig.ALLOW_ROTATION_SENSOR)
+            if (CoreConfig.ALLOW_ROTATION_SENSOR)
                 canvas.rotate(rotationZ);
         }
 

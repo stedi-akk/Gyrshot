@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.targets.Target;
@@ -59,7 +59,7 @@ public class TargetsPointerLayer extends Layer implements GameLayer.TargetsListe
                 float pointerX = drawRect.forceInLeftRight(targetRealX, target.getRadius());
                 float pointerY = drawRect.forceInTopBottom(targetRealY, target.getRadius());
 
-                if (pointerX != targetRealX || pointerY != targetRealY || AppConfig.ALWAYS_SHOW_TARGET_POINTER)
+                if (pointerX != targetRealX || pointerY != targetRealY || CoreConfig.ALWAYS_SHOW_TARGET_POINTER)
                     canvas.drawCircle(pointerX, pointerY, 10, paint);
             }
         }

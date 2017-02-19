@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Game types and config params (tragets sizes, times, points, etc)
  */
-public final class Games {
+public final class GamesConfig {
     public enum Type {
         DECREASES(1001, R.string.decreases_game),
         FAST_DISAPPEARS(1002, R.string.fast_disappears_game),

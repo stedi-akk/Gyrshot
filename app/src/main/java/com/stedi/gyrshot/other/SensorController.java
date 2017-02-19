@@ -6,7 +6,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 
 public class SensorController implements SensorEventListener {
     private SensorManager sensorManager;
@@ -29,7 +29,7 @@ public class SensorController implements SensorEventListener {
     public SensorController(Context context) {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         gyroSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        if (AppConfig.ALLOW_ROTATION_SENSOR) {
+        if (CoreConfig.ALLOW_ROTATION_SENSOR) {
             rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
             rotationMatrix = new float[16];
             rotationMatrixTemp = new float[16];
@@ -64,8 +64,8 @@ public class SensorController implements SensorEventListener {
             return;
 
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            if (Math.abs(event.values[0] - lastGyroX) > AppConfig.GYROSCOPE_SENSOR_ACCURACY
-                    || Math.abs(event.values[1] - lastGyroY) > AppConfig.GYROSCOPE_SENSOR_ACCURACY) {
+            if (Math.abs(event.values[0] - lastGyroX) > CoreConfig.GYROSCOPE_SENSOR_ACCURACY
+                    || Math.abs(event.values[1] - lastGyroY) > CoreConfig.GYROSCOPE_SENSOR_ACCURACY) {
 
                 lastGyroX = event.values[0];
                 lastGyroY = event.values[1];
@@ -74,7 +74,7 @@ public class SensorController implements SensorEventListener {
                         (float) -Math.toDegrees(lastGyroY));
             }
         } else if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            if (Math.abs(event.values[2] - lastRotationZ) > AppConfig.ROTATION_SENSOR_ACCURACY) {
+            if (Math.abs(event.values[2] - lastRotationZ) > CoreConfig.ROTATION_SENSOR_ACCURACY) {
 
                 lastRotationZ = event.values[2];
 

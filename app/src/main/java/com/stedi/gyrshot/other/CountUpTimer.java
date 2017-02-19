@@ -2,7 +2,7 @@ package com.stedi.gyrshot.other;
 
 import android.os.CountDownTimer;
 
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +14,7 @@ public abstract class CountUpTimer extends CountDownTimer {
     private boolean isActive;
 
     public CountUpTimer(String format) {
-        super(System.currentTimeMillis() + AppConfig.MAX_GAME_TIME, TimeUnit.SECONDS.toMillis(1));
+        super(System.currentTimeMillis() + CoreConfig.MAX_GAME_TIME, TimeUnit.SECONDS.toMillis(1));
         this.format = format;
     }
 

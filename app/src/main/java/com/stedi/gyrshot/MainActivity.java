@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.stedi.gyrshot.camera.CameraActivity;
-import com.stedi.gyrshot.constants.AppConfig;
+import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
@@ -46,7 +46,7 @@ public class MainActivity extends CameraActivity implements
         layersView = (LayersView) findViewById(R.id.main_activity_layers_view);
         overlayView = (OverlayView) findViewById(R.id.main_activity_overlay_view);
 
-        if (AppConfig.TOAST_ON_LAYERS_VIEW_EXCEPTION)
+        if (CoreConfig.TOAST_ON_LAYERS_VIEW_EXCEPTION)
             layersView.setOnDrawExceptionListener(this);
 
         sensorController = new SensorController(this);
@@ -64,7 +64,7 @@ public class MainActivity extends CameraActivity implements
         super.onStart();
         if (!sensorController.isGyroscopeExist())
             Toast.makeText(this, "Gyroscope sensor not found", Toast.LENGTH_LONG).show();
-        if (AppConfig.ALLOW_ROTATION_SENSOR && !sensorController.isRotationVectorExist())
+        if (CoreConfig.ALLOW_ROTATION_SENSOR && !sensorController.isRotationVectorExist())
             Toast.makeText(this, "Rotation sensor not found", Toast.LENGTH_LONG).show();
     }
 

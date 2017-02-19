@@ -4,13 +4,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import com.stedi.gyrshot.constants.Games;
+import com.stedi.gyrshot.constants.GamesConfig;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
 
 public class DecreasesTarget extends Target {
-    private static final float RADIUS_STEP = Games.DECREASES_TARGET_SIZE / Games.DECREASES_TARGET_LIFE_TIME;
+    private static final float RADIUS_STEP = GamesConfig.DECREASES_TARGET_SIZE / GamesConfig.DECREASES_TARGET_LIFE_TIME;
 
     public class OnShot implements ShotCallback {
     }
@@ -60,10 +60,10 @@ public class DecreasesTarget extends Target {
         }
 
         elapsedTime = System.currentTimeMillis() - startTime;
-        if (elapsedTime >= Games.DECREASES_TARGET_LIFE_TIME)
+        if (elapsedTime >= GamesConfig.DECREASES_TARGET_LIFE_TIME)
             isAlive = false;
 
-        targetRadius = Games.DECREASES_TARGET_SIZE - (RADIUS_STEP * elapsedTime);
+        targetRadius = GamesConfig.DECREASES_TARGET_SIZE - (RADIUS_STEP * elapsedTime);
         canvas.drawCircle(getX(), getY(), targetRadius, paint);
     }
 }

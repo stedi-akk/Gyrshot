@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 import com.stedi.gyrshot.App;
-import com.stedi.gyrshot.constants.Games;
+import com.stedi.gyrshot.constants.GamesConfig;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.targets.Target;
@@ -34,7 +34,7 @@ public class GameInfoLayer extends Layer implements GameLayer.TargetsListener {
 
     @Override
     public void onAddToLayersView(LayersView layersView) {
-        countUpTimer = new CountUpTimer(Games.GAME_TIMER_FORMAT) {
+        countUpTimer = new CountUpTimer(GamesConfig.GAME_TIMER_FORMAT) {
             @Override
             public void onTimeUp(String formattedTime) {
                 GameInfoLayer.this.formattedTime = formattedTime;

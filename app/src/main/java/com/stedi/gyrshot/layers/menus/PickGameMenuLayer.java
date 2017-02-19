@@ -1,7 +1,7 @@
 package com.stedi.gyrshot.layers.menus;
 
 import com.stedi.gyrshot.App;
-import com.stedi.gyrshot.constants.Games;
+import com.stedi.gyrshot.constants.GamesConfig;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.views.ButtonLayer;
 
@@ -12,15 +12,15 @@ public class PickGameMenuLayer extends SimpleMenuLayer {
     private final List<ButtonLayer> buttons = new ArrayList<>();
 
     public class OnShot implements ShotCallback {
-        public final Games.Type type;
+        public final GamesConfig.Type type;
 
-        public OnShot(Games.Type type) {
+        public OnShot(GamesConfig.Type type) {
             this.type = type;
         }
     }
 
     public PickGameMenuLayer() {
-        for (Games.Type type : Games.Type.values()) {
+        for (GamesConfig.Type type : GamesConfig.Type.values()) {
             ButtonLayer btn = new ButtonLayer(type.id, App.getRes().getText(type.resTitle).toString());
             buttons.add(btn);
         }
@@ -37,7 +37,7 @@ public class PickGameMenuLayer extends SimpleMenuLayer {
         for (ButtonLayer button : buttons) {
             ButtonLayer.OnShot callback = button.onShot(shotX, shotY);
             if (callback != null)
-                return new PickGameMenuLayer.OnShot(Games.Type.find(callback.id));
+                return new PickGameMenuLayer.OnShot(GamesConfig.Type.find(callback.id));
         }
         return null;
     }
