@@ -1,20 +1,18 @@
-package com.stedi.gyrshot.layers.menus.buttons;
+package com.stedi.gyrshot.layers.views;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.stedi.gyrshot.constants.Styles;
-import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.LayersView;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.other.FloatRect;
 import com.stedi.gyrshot.other.PaintFactory;
 
-public class SimpleButton extends Layer implements LayersView.OnNewTranslateValues {
+public class ButtonLayer extends TextLayer implements LayersView.OnNewTranslateValues {
     private final Paint fillPaint = PaintFactory.create(PaintFactory.Type.BUTTON_BODY);
     private final Paint borderPaint = PaintFactory.create(PaintFactory.Type.BUTTON_BORDER);
-    private final Paint textPaint = PaintFactory.create(PaintFactory.Type.BUTTON_TEXT);
 
     public class OnShot implements ShotCallback {
         public final int id;
@@ -28,20 +26,24 @@ public class SimpleButton extends Layer implements LayersView.OnNewTranslateValu
     private FloatRect drawRect;
 
     private int id;
-    private CharSequence text;
 
     private float xOffset, yOffset;
     private float centerX, centerY;
 
-    public SimpleButton(int id, CharSequence text) {
+    public ButtonLayer(int id, String text) {
+        super(PaintFactory.create(PaintFactory.Type.BUTTON_TEXT));
         this.id = id;
-        this.text = text;
+        setText(text);
         init();
     }
 
     public void setXYOffset(float xOffset, float yOffset) {
+        if (this.xOffset == xOffset && this.yOffset == yOffset)
+            return;
+
         this.xOffset = xOffset;
         this.yOffset = yOffset;
+        setPosition(xOffset, yOffset);
         calculateBoundsRect();
         calculateDrawRect();
     }
@@ -65,7 +67,7 @@ public class SimpleButton extends Layer implements LayersView.OnNewTranslateValu
         fillPaint.setColor(drawRect.isInside(centerX, centerY) ? Color.YELLOW : Color.WHITE);
         canvas.drawRect(drawRect.left, drawRect.top, drawRect.right, drawRect.bottom, fillPaint);
         canvas.drawRect(drawRect.left, drawRect.top, drawRect.right, drawRect.bottom, borderPaint);
-        canvas.drawText(text, 0, text.length(), xOffset, yOffset, textPaint);
+        super.onDraw(canvas, zoneRect, actualRect);
     }
 
     @Override
