@@ -6,8 +6,6 @@ import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.other.FloatRect;
-import com.stedi.gyrshot.other.LayersThread;
-import com.stedi.gyrshot.other.UiThread;
 
 public abstract class Target extends Layer {
     private float x;
@@ -20,20 +18,14 @@ public abstract class Target extends Layer {
         this.y = y;
     }
 
-    @UiThread
     public abstract ShotCallback getShotCallback();
 
-    @UiThread
     public abstract float getRadius();
 
-    @UiThread
-    @LayersThread
     public abstract boolean isAlive();
 
-    @UiThread
     protected abstract void onPauseTarget();
 
-    @LayersThread
     protected abstract void onDrawTarget(Canvas canvas, FloatRect zoneRect, FloatRect actualRect);
 
     public float getX() {

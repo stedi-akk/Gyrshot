@@ -11,9 +11,7 @@ import android.view.SurfaceView;
 
 import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.other.FloatRect;
-import com.stedi.gyrshot.other.LayersThread;
 import com.stedi.gyrshot.other.Mode;
-import com.stedi.gyrshot.other.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,27 +23,24 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private RefreshThread thread;
 
-    private volatile Mode mode;
-    private volatile FloatRect actualRect;
+    private Mode mode;
+    private FloatRect actualRect;
 
-    private volatile float screenHalfWidth, screenHalfHeight;
-    private volatile float gyroXOffset, gyroYOffset, rotationZ;
-    private volatile boolean isTransparent;
-    private volatile boolean isThreadRunning;
+    private float screenHalfWidth, screenHalfHeight;
+    private float gyroXOffset, gyroYOffset, rotationZ;
+    private boolean isTransparent;
+    private boolean isThreadRunning;
 
     private List<OnNewTranslateValues> onNewTranslateValuesListeners;
     private OnDrawException onExceptionListener;
 
     public interface OnNewTranslateValues {
-        @UiThread
         void onGyroXYOffset(float gyroXOffset, float gyroYOffset);
 
-        @UiThread
         void onRotationZ(float rotationZ);
     }
 
     public interface OnDrawException {
-        @LayersThread
         void onDrawException(Exception ex);
     }
 
@@ -72,8 +67,10 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void setMode(Mode mode) {
-        this.mode = mode;
-        calculateActualRect();
+        synchronized (layersManager) {
+            this.mode = mode;
+            calculateActualRect();
+        }
     }
 
     public void attachLayerToTheTop(Layer layer) {
@@ -164,14 +161,18 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void updateFromGyroscope(float gyroX, float gyroY) {
-        gyroXOffset = actualRect.forceInLeftRight(gyroXOffset + gyroX);
-        gyroYOffset = actualRect.forceInTopBottom(gyroYOffset + gyroY);
-        notifyNewGyroValues();
+        synchronized (layersManager) {
+            gyroXOffset = actualRect.forceInLeftRight(gyroXOffset + gyroX);
+            gyroYOffset = actualRect.forceInTopBottom(gyroYOffset + gyroY);
+            notifyNewGyroValues();
+        }
     }
 
     public void updateFromRotationVector(float rotationZ) {
-        this.rotationZ = rotationZ;
-        notifyNewRotationValue();
+        synchronized (layersManager) {
+            this.rotationZ = rotationZ;
+            notifyNewRotationValue();
+        }
     }
 
     public ShotCallback onShot() {

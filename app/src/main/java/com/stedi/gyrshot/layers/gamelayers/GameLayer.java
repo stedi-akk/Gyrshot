@@ -7,9 +7,7 @@ import com.stedi.gyrshot.layers.Layer;
 import com.stedi.gyrshot.layers.ShotCallback;
 import com.stedi.gyrshot.layers.targets.Target;
 import com.stedi.gyrshot.other.FloatRect;
-import com.stedi.gyrshot.other.LayersThread;
 import com.stedi.gyrshot.other.TargetsFactory;
-import com.stedi.gyrshot.other.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +19,10 @@ public class GameLayer extends Layer {
     private List<TargetsListener> listeners;
 
     public interface TargetsListener {
-        @LayersThread
         void onNewTarget(Target target);
 
-        @LayersThread
         void onDrawTargets(List<Target> targets);
 
-        @UiThread
-        @LayersThread
         void onTargetDelete(Target target, boolean fromShot);
     }
 
