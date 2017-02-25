@@ -9,9 +9,9 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.stedi.gyrshot.App;
 import com.stedi.gyrshot.constants.CoreConfig;
 import com.stedi.gyrshot.other.FloatRect;
-import com.stedi.gyrshot.other.Mode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private RefreshThread thread;
 
-    private Mode mode;
+    private Size size;
     private FloatRect actualRect;
 
     private float screenHalfWidth, screenHalfHeight;
@@ -33,6 +33,29 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private List<OnNewTranslateValues> onNewTranslateValuesListeners;
     private OnDrawException onExceptionListener;
+
+    public enum Size {
+        SMALL(CoreConfig.SMALL_ZONE_SIZE[0], CoreConfig.SMALL_ZONE_SIZE[1]),
+        BIG(CoreConfig.BIG_ZONE_SIZE[0], CoreConfig.BIG_ZONE_SIZE[1]);
+
+        private FloatRect zoneRect;
+
+        Size(int zoneWidthDp, int zoneHeightDp) {
+            setZoneSize(App.dp2px(zoneWidthDp), App.dp2px(zoneHeightDp));
+        }
+
+        public static void override(Size size, float zoneWidthPx, float zoneHeightPx) {
+            size.setZoneSize(zoneWidthPx, zoneHeightPx);
+        }
+
+        private void setZoneSize(float zoneWidthPx, float zoneHeightPx) {
+            this.zoneRect = new FloatRect(zoneWidthPx, zoneHeightPx);
+        }
+
+        private FloatRect getZoneRect() {
+            return zoneRect;
+        }
+    }
 
     public interface OnNewTranslateValues {
         void onGyroXYOffset(float gyroXOffset, float gyroYOffset);
@@ -66,9 +89,9 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
         calculateActualRect();
     }
 
-    public void setMode(Mode mode) {
+    public void setSize(Size size) {
         synchronized (layersManager) {
-            this.mode = mode;
+            this.size = size;
             calculateActualRect();
         }
     }
@@ -189,14 +212,14 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void calculateActualRect() {
         if (CoreConfig.ATTACH_ZONE_RECT_TO_SCREEN_EDGES) {
-            FloatRect rect = mode.getZoneRect();
+            FloatRect rect = size.getZoneRect();
             float leftEdge = rect.left + screenHalfWidth;
             float rightEdge = rect.right - screenHalfWidth;
             float topEdge = rect.top + screenHalfHeight;
             float bottomEdge = rect.bottom - screenHalfHeight;
             actualRect = new FloatRect(leftEdge, topEdge, rightEdge, bottomEdge);
         } else {
-            actualRect = mode.getZoneRect();
+            actualRect = size.getZoneRect();
         }
     }
 
@@ -290,7 +313,7 @@ public class LayersView extends SurfaceView implements SurfaceHolder.Callback {
                         canvasMoved = false;
                     }
 
-                    layer.onDraw(canvas, mode.getZoneRect(), actualRect);
+                    layer.onDraw(canvas, size.getZoneRect(), actualRect);
                 }
             }
 

@@ -16,12 +16,12 @@ public final class CoreConfig {
     public static final float ROTATION_SENSOR_ACCURACY = 0.005f;
 
     // zone size
-    public static final boolean MODE_ZONE_SIZE_DEPENDS_ON_SCREEN = false;
+    public static final boolean ZONE_SIZE_DEPENDS_ON_SCREEN = false;
     public static final boolean ATTACH_ZONE_RECT_TO_SCREEN_EDGES = false;
-    public static final float[] MENU_ZONE_SIZE_MULTIPLIER_BY_SCREEN = new float[]{2.6f, 1.8f};
-    public static final float[] GAME_ZONE_SIZE_MULTIPLIER_BY_SCREEN = new float[]{4f, 4f};
-    public static final int[] STATIC_MENU_SIZE = new int[]{500, 500};
-    public static final int[] STATIC_GAME_SIZE = new int[]{700, 700};
+    public static final float[] SMALL_ZONE_SIZE_MULTIPLIER_BY_SCREEN = new float[]{2.6f, 1.8f};
+    public static final float[] BIG_ZONE_SIZE_MULTIPLIER_BY_SCREEN = new float[]{4f, 4f};
+    public static final int[] SMALL_ZONE_SIZE = new int[]{500, 500};
+    public static final int[] BIG_ZONE_SIZE = new int[]{700, 700};
 
     // debug info
     public static final boolean DEBUG_LAYERS_MANAGER = false;

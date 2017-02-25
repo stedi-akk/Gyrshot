@@ -19,7 +19,6 @@ import com.stedi.gyrshot.layers.gamelayers.TargetsPointerLayer;
 import com.stedi.gyrshot.layers.menus.PickGameMenuLayer;
 import com.stedi.gyrshot.layers.menus.StartMenuLayer;
 import com.stedi.gyrshot.layers.targets.DecreasesTarget;
-import com.stedi.gyrshot.other.Mode;
 import com.stedi.gyrshot.other.SensorController;
 import com.stedi.gyrshot.overlay.OverlayView;
 
@@ -30,8 +29,6 @@ public class MainActivity extends CameraActivity implements
     private ViewGroup cameraPreviewContainer;
     private LayersView layersView;
     private OverlayView overlayView;
-
-    private static Mode currentMode; // temporal logic
 
     private GameLayer gameLayer;
     private TargetsPointerLayer pointerLayer;
@@ -50,7 +47,13 @@ public class MainActivity extends CameraActivity implements
             layersView.setOnDrawExceptionListener(this);
 
         sensorController = new SensorController(this);
-        initLayersAndOverlay();
+
+        layersView.attachLayerToTheBottom(new ZoneLayer());
+        layersView.attachLayerToTheTop(new ShotPointerLayer());
+        layersView.addLayer(new StartMenuLayer(), true);
+        layersView.setSize(LayersView.Size.SMALL);
+        overlayView.setListener(this);
+        invalidateOverlayBackButton();
     }
 
     @Override
@@ -89,7 +92,6 @@ public class MainActivity extends CameraActivity implements
     protected void onDestroy() {
         super.onDestroy();
         layersView.removeAllLayers();
-        currentMode = null;
     }
 
     @Override
@@ -142,7 +144,7 @@ public class MainActivity extends CameraActivity implements
                 StartMenuLayer.OnShot onShot = (StartMenuLayer.OnShot) callback;
                 switch (onShot.type) {
                     case START_GAME:
-                        changeModeTo(Mode.MENU);
+                        layersView.setSize(LayersView.Size.SMALL);
                         layersView.addLayer(new PickGameMenuLayer(), true);
                         invalidateOverlayBackButton();
                         break;
@@ -154,7 +156,7 @@ public class MainActivity extends CameraActivity implements
             }
             if (callback instanceof PickGameMenuLayer.OnShot) {
                 PickGameMenuLayer.OnShot onShot = (PickGameMenuLayer.OnShot) callback;
-                changeModeTo(Mode.GAME);
+                layersView.setSize(LayersView.Size.BIG);
                 gameLayer = new GameLayer(onShot.type);
                 pointerLayer = new TargetsPointerLayer();
                 gameInfoLayer = new GameInfoLayer();
@@ -183,10 +185,7 @@ public class MainActivity extends CameraActivity implements
         invalidateOverlayBackButton();
         if (result) {
             Layer layer = layersView.getBackStack().peek();
-            if (layer instanceof GameLayer)
-                changeModeTo(Mode.GAME);
-            else
-                changeModeTo(Mode.MENU);
+            layersView.setSize(layer instanceof GameLayer ? LayersView.Size.BIG : LayersView.Size.SMALL);
         }
     }
 
@@ -206,24 +205,6 @@ public class MainActivity extends CameraActivity implements
     private void invalidateOverlayBackButton() {
         boolean visible = layersView.getBackStack().size() > 1;
         overlayView.setBackButtonVisible(visible);
-    }
-
-    private void initLayersAndOverlay() {
-        Mode initMode = currentMode;
-        if (initMode == null) { // first launch
-            initMode = Mode.MENU;
-            layersView.attachLayerToTheBottom(new ZoneLayer());
-            layersView.attachLayerToTheTop(new ShotPointerLayer());
-            layersView.addLayer(new StartMenuLayer(), true);
-        }
-        changeModeTo(initMode);
-        overlayView.setListener(this);
-        invalidateOverlayBackButton();
-    }
-
-    private void changeModeTo(Mode mode) {
-        currentMode = mode;
-        layersView.setMode(currentMode);
     }
 
     private void hideNavigationBar() {
